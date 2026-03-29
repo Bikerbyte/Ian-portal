@@ -2,7 +2,7 @@
 title: "在 AWS 上建立自己的 VPN：舊文整理版"
 excerpt: "以前寫在 Medium 的 AWS VPN 教學轉載。"
 date: 2026-03-29
-category: "技術筆記"
+category: "學習筆記"
 tags:
   - AWS
   - VPN
