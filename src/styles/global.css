@@ -1,12 +1,13 @@
 :root {
   color-scheme: light;
-  --bg: #ffffff;
-  --text: #2b2b2b;
-  --muted: #6d6d6d;
-  --line: #e6e6e6;
-  --line-strong: #d7d7d7;
-  --accent: #1f5f8b;
-  --accent-soft: #f5f8fb;
+  --bg: #fffdf9;
+  --text: #2d2622;
+  --muted: #73665e;
+  --line: #ece3da;
+  --line-strong: #d8c7b8;
+  --accent: #b45d3f;
+  --accent-soft: #fbefe8;
+  --accent-alt: #4c7b74;
   --container: 860px;
 }
 
@@ -23,7 +24,10 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  background: var(--bg);
+  background:
+    radial-gradient(circle at top left, rgba(225, 193, 171, 0.3), transparent 28%),
+    radial-gradient(circle at top right, rgba(132, 168, 158, 0.18), transparent 24%),
+    var(--bg);
   color: var(--text);
   font-family: "Source Sans 3", sans-serif;
   line-height: 1.7;
@@ -58,7 +62,8 @@ img {
 
 .site-header {
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 253, 249, 0.92);
+  backdrop-filter: blur(12px);
 }
 
 .header-inner {
@@ -118,6 +123,18 @@ h4 {
   padding: 4.25rem 0 2rem;
 }
 
+.home-hero {
+  padding-top: 4rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.home-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  gap: 2rem;
+  align-items: center;
+}
+
 .hero-panel {
   text-align: center;
 }
@@ -157,12 +174,21 @@ h3 {
   font-size: 1.08rem;
 }
 
+.hero-copy .hero-description {
+  margin: 0;
+  max-width: 32rem;
+}
+
 .hero-actions {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: 0.75rem;
   margin-top: 1.4rem;
+}
+
+.hero-copy .hero-actions {
+  justify-content: flex-start;
 }
 
 .button,
@@ -191,7 +217,14 @@ button.button:hover,
 }
 
 .button-secondary {
-  color: var(--muted);
+  color: var(--accent-alt);
+  border-color: rgba(76, 123, 116, 0.28);
+}
+
+.button-secondary:hover {
+  color: var(--accent-alt);
+  border-color: var(--accent-alt);
+  background: rgba(76, 123, 116, 0.09);
 }
 
 .section {
@@ -204,6 +237,10 @@ button.button:hover,
 
 .section + .section {
   border-top: 1px solid var(--line);
+}
+
+.section-tinted {
+  background: rgba(255, 255, 255, 0.68);
 }
 
 .section-header {
@@ -222,10 +259,11 @@ button.button:hover,
   gap: 1rem;
   color: var(--muted);
   font-size: 0.98rem;
+  margin-top: 1.35rem;
 }
 
 .home-intro {
-  margin-bottom: 1rem;
+  margin-bottom: 1.3rem;
   text-align: center;
   color: var(--muted);
   font-size: 1.02rem;
@@ -248,6 +286,35 @@ button.button:hover,
 
 .home-links a:hover {
   color: var(--accent);
+}
+
+.hero-photos {
+  display: grid;
+  gap: 1rem;
+}
+
+.hero-photo {
+  overflow: hidden;
+  border-radius: 26px;
+  background: #efe4db;
+  box-shadow: 0 14px 36px rgba(101, 72, 50, 0.12);
+}
+
+.hero-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  aspect-ratio: 4 / 3;
+}
+
+.hero-photo-large {
+  transform: rotate(-2deg);
+}
+
+.hero-photo-small {
+  width: 72%;
+  margin-left: auto;
+  transform: translateY(-12px) rotate(2deg);
 }
 
 .post-preview,
@@ -406,9 +473,14 @@ button.button:hover,
 }
 
 @media (max-width: 840px) {
+  .home-hero-grid,
   .post-layout {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+
+  .hero-photo-small {
+    width: 58%;
   }
 }
 
@@ -433,6 +505,18 @@ button.button:hover,
 
   .home-intro {
     text-align: left;
+  }
+
+  .hero-copy .hero-actions {
+    justify-content: flex-start;
+  }
+
+  .hero-photo,
+  .hero-photo-small,
+  .hero-photo-large {
+    transform: none;
+    width: 100%;
+    margin: 0;
   }
 
   h1 {

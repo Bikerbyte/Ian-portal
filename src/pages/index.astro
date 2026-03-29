@@ -1,7 +1,6 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PageHero from "../components/PageHero.astro";
 import BlogCard from "../components/BlogCard.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import { projects } from "../data/projects";
@@ -13,34 +12,41 @@ const recentPosts = posts.slice(0, 3);
 ---
 
 <BaseLayout title="首頁" description={site.description}>
-  <PageHero
-    title="Ian Portal"
-    description="放一些自己之後還會回來看的內容。"
-    ctas={[
-      { href: "/blog/", label: "看文章" },
-      { href: "/tools/packing-list/", label: "看工具", kind: "secondary" }
-    ]}
-  />
+  <section class="home-hero section">
+    <div class="container home-hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Ian Portal</p>
+        <h1>筆記、工具、旅途裡留下來的東西。</h1>
+        <p class="hero-description">
+          這裡放一些自己之後還會回來看的內容，包含旅行清單、技術筆記、攻略整理，還有一些日本旅行的照片。
+        </p>
+        <div class="hero-actions">
+          <a class="button" href={withBase("/blog/")}>看文章</a>
+          <a class="button button-secondary" href={withBase("/tools/packing-list/")}>看工具</a>
+        </div>
 
-  <section class="section">
-    <div class="container">
-      <div class="home-intro">
-        <p>{site.tagline}</p>
+        <div class="home-links">
+          <a href={withBase("/projects/")}>Packing List Generator</a>
+          <a href={withBase("/blog/")}>文章列表</a>
+          <a href={withBase("/tags/demo/")}>Demo 標籤</a>
+        </div>
       </div>
-      <div class="home-links">
-        <a href={withBase("/projects/")}>Packing List Generator</a>
-        <a href={withBase("/blog/")}>文章列表</a>
-        <a href={withBase("/tags/demo/")}>Demo 標籤</a>
+
+      <div class="hero-photos" aria-label="首頁旅遊照片">
+        <figure class="hero-photo hero-photo-large">
+          <img src={withBase("/images/home-japan-1.jpg")} alt="Japan trip photo" loading="eager" />
+        </figure>
+        <figure class="hero-photo hero-photo-small">
+          <img src={withBase("/images/home-japan-2.jpg")} alt="Japan trip photo" loading="eager" />
+        </figure>
       </div>
     </div>
   </section>
 
-  <section class="section soft-section">
+  <section class="section section-tinted">
     <div class="container">
-      <div class="section-header">
-        <div>
-          <h2>最新文章</h2>
-        </div>
+      <div class="home-intro">
+        <p>{site.tagline}</p>
       </div>
       <div class="list-stack">
         {recentPosts.map((post) => (
@@ -72,4 +78,3 @@ const recentPosts = posts.slice(0, 3);
     </div>
   </section>
 </BaseLayout>
-
