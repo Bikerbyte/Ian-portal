@@ -1,0 +1,23 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHero from "../../components/PageHero.astro";
+import PackingListTool from "../../components/PackingListTool.astro";
+---
+
+<BaseLayout
+  title="Packing List Generator"
+  description="Generate a practical trip packing checklist, personalize it with your own essentials, and keep it saved locally."
+>
+  <PageHero
+    eyebrow="Tool"
+    title="Packing List Generator"
+    description="Generate a practical trip packing checklist from trip conditions, then personalize it with your own essentials and edits."
+    ctas={[{ href: "#tool", label: "Start a Trip" }]}
+  />
+
+  <section class="section" id="tool">
+    <div class="container">
+      <PackingListTool />
+    </div>
+  </section>
+</BaseLayout>

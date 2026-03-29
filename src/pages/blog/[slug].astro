@@ -1,0 +1,52 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.id.replace(/\.md$/, "") },
+    props: { post }
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const allPosts = (await getCollection("blog")).sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+const index = allPosts.findIndex((entry) => entry.id === post.id);
+const previousPost = index > 0 ? allPosts[index - 1] : null;
+const nextPost = index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1] : null;
+---
+
+<BaseLayout title={post.data.title} description={post.data.excerpt}>
+  <section class="section post-section">
+    <div class="container post-layout">
+      <article class="post-article">
+        <div class="post-meta">
+          <span>{post.data.category}</span>
+          <span>{post.data.date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</span>
+          <span>{Math.max(3, Math.ceil(post.body.split(/\s+/).length / 180))} min read</span>
+        </div>
+        <h1>{post.data.title}</h1>
+        <p class="post-lead">{post.data.excerpt}</p>
+        <div class="tag-list">
+          {post.data.tags.map((tag) => (
+            <span class="tag">{tag}</span>
+          ))}
+        </div>
+        <div class="post-content">
+          <Content />
+        </div>
+      </article>
+
+      <aside class="post-sidebar">
+        <div class="card sidebar-card">
+          <p class="eyebrow">More writing</p>
+          {previousPost && <a href={`/blog/${previousPost.id.replace(/\.md$/, "")}/`}>Previous: {previousPost.data.title}</a>}
+          {nextPost && <a href={`/blog/${nextPost.id.replace(/\.md$/, "")}/`}>Next: {nextPost.data.title}</a>}
+          <a href="/blog/">Back to blog index</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>

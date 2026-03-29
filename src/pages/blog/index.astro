@@ -1,0 +1,33 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHero from "../../components/PageHero.astro";
+import BlogCard from "../../components/BlogCard.astro";
+
+const posts = (await getCollection("blog")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<BaseLayout title="Blog" description="Game guides, study notes, and practical writing collected in Ian Portal.">
+  <PageHero
+    eyebrow="Blog"
+    title="Notes, guides, and things worth keeping."
+    description="This section mixes study notes, game route memos, and practical write-ups. The categories may differ, but the writing style stays compact and reusable."
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="card-grid">
+        {posts.map((post) => (
+          <BlogCard
+            href={`/blog/${post.id.replace(/\.md$/, "")}/`}
+            title={post.data.title}
+            excerpt={post.data.excerpt}
+            date={post.data.date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+            category={post.data.category}
+            tags={post.data.tags}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

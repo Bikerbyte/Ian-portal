@@ -1,0 +1,1015 @@
+<section class="tool-shell">
+  <div class="tool-grid">
+    <section class="tool-card intro-card">
+      <p class="eyebrow">Trip Packing Flow</p>
+      <h2>Build a solid base list, then make it yours.</h2>
+      <p>
+        This tool starts with trip conditions, applies your personal essentials if you want them, and lets
+        you adjust the checklist item by item.
+      </p>
+      <div class="intro-points">
+        <div>
+          <strong>Rule-based</strong>
+          <span>No API or AI dependency. The first draft comes from clear trip rules.</span>
+        </div>
+        <div>
+          <strong>Editable</strong>
+          <span>Rename, recategorize, check off, add, and remove items freely.</span>
+        </div>
+        <div>
+          <strong>Persistent</strong>
+          <span>Your conditions, personal essentials, and latest checklist stay in local storage.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="tool-card">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Step 1</p>
+          <h2>Trip Setup</h2>
+        </div>
+      </div>
+
+      <form data-trip-form class="trip-form">
+        <div class="field-grid">
+          <label>
+            <span>Trip name</span>
+            <input name="tripName" type="text" placeholder="Weekend in Kyoto" />
+          </label>
+
+          <label>
+            <span>Duration (days)</span>
+            <input name="durationDays" type="number" min="1" max="30" value="3" required />
+          </label>
+
+          <label>
+            <span>Destination</span>
+            <select name="destinationType">
+              <option value="domestic">Domestic</option>
+              <option value="international">International</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Trip purpose</span>
+            <select name="purpose">
+              <option value="leisure">Leisure</option>
+              <option value="business">Business</option>
+              <option value="outdoor">Outdoor</option>
+              <option value="beach">Beach</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Weather</span>
+            <select name="weather">
+              <option value="mild">Mild</option>
+              <option value="hot">Hot</option>
+              <option value="cold">Cold</option>
+              <option value="rainy">Rainy</option>
+            </select>
+          </label>
+
+          <label class="toggle">
+            <input name="laundryAvailable" type="checkbox" />
+            <span>Laundry available</span>
+          </label>
+
+          <label class="toggle">
+            <input name="needLaptop" type="checkbox" />
+            <span>Bring laptop</span>
+          </label>
+
+          <label class="toggle">
+            <input name="needCamera" type="checkbox" />
+            <span>Bring camera</span>
+          </label>
+
+          <label class="toggle">
+            <input name="needFormalWear" type="checkbox" />
+            <span>Need formal wear</span>
+          </label>
+
+          <label class="toggle">
+            <input name="needMedicineReminders" type="checkbox" />
+            <span>Include medicine reminders</span>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button class="button" type="submit">Generate Packing List</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="tool-grid secondary-grid">
+    <section class="tool-card">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Step 2</p>
+          <h2>Personal Essentials</h2>
+        </div>
+      </div>
+
+      <form data-group-form class="group-form">
+        <div class="field-grid compact-grid">
+          <label>
+            <span>Group name</span>
+            <input name="groupName" type="text" placeholder="My Electronics" required />
+          </label>
+          <label class="full-width">
+            <span>Items</span>
+            <textarea
+              name="groupItems"
+              rows="4"
+              placeholder="Power bank&#10;USB-C cable&#10;Earplugs"
+              required
+            ></textarea>
+          </label>
+        </div>
+        <div class="form-actions">
+          <button class="button button-secondary" type="submit">Save Group</button>
+        </div>
+      </form>
+
+      <div class="saved-groups">
+        <div class="saved-groups-header">
+          <h3>Saved groups</h3>
+          <p>Select which groups should be applied the next time you generate a list.</p>
+        </div>
+        <div data-group-list class="group-list"></div>
+      </div>
+    </section>
+
+    <section class="tool-card">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Step 3</p>
+          <h2>Checklist</h2>
+        </div>
+        <div class="stats" data-stats></div>
+      </div>
+
+      <form data-item-form class="add-item-form">
+        <input name="itemName" type="text" placeholder="Add a custom item" required />
+        <select name="itemCategory">
+          <option value="documents">Documents</option>
+          <option value="clothing">Clothing</option>
+          <option value="toiletries">Toiletries</option>
+          <option value="electronics">Electronics</option>
+          <option value="health">Health</option>
+          <option value="others">Others</option>
+        </select>
+        <button class="button button-secondary" type="submit">Add Item</button>
+      </form>
+
+      <div data-empty-state class="empty-state">
+        Generate a list to start editing your checklist.
+      </div>
+      <div data-checklist class="checklist-groups"></div>
+    </section>
+  </div>
+
+  <section class="tool-card export-card">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Step 4</p>
+        <h2>Save or Export</h2>
+      </div>
+    </div>
+
+    <div class="export-actions">
+      <button class="button" data-export="txt" type="button">Export TXT</button>
+      <button class="button button-secondary" data-export="md" type="button">Export Markdown</button>
+      <button class="button button-ghost" data-reset type="button">Clear Checklist</button>
+    </div>
+    <p class="export-note">
+      Exports use the current edited checklist, including checked states and custom items.
+    </p>
+  </section>
+</section>
+
+<script>
+  // @ts-nocheck
+  const STORAGE_KEY = "ian-portal-packing-list";
+  const CATEGORY_LABELS = {
+    documents: "Documents",
+    clothing: "Clothing",
+    toiletries: "Toiletries",
+    electronics: "Electronics",
+    health: "Health",
+    others: "Others"
+  };
+
+  const DEFAULT_STATE = {
+    conditions: {
+      tripName: "",
+      durationDays: 3,
+      destinationType: "domestic",
+      purpose: "leisure",
+      weather: "mild",
+      laundryAvailable: false,
+      needLaptop: false,
+      needCamera: false,
+      needFormalWear: false,
+      needMedicineReminders: false
+    },
+    essentialGroups: [
+      {
+        id: "default-tech",
+        name: "My Tech Basics",
+        items: ["Power bank", "USB-C cable", "Earphones"]
+      },
+      {
+        id: "default-health",
+        name: "My Health Kit",
+        items: ["Allergy medicine", "Bandages", "Pain relief tablets"]
+      }
+    ],
+    selectedGroupIds: ["default-tech"],
+    items: []
+  };
+
+  const tripForm = document.querySelector("[data-trip-form]");
+  const groupForm = document.querySelector("[data-group-form]");
+  const itemForm = document.querySelector("[data-item-form]");
+  const groupList = document.querySelector("[data-group-list]");
+  const checklist = document.querySelector("[data-checklist]");
+  const stats = document.querySelector("[data-stats]");
+  const emptyState = document.querySelector("[data-empty-state]");
+  const exportButtons = document.querySelectorAll("[data-export]");
+  const resetButton = document.querySelector("[data-reset]");
+
+  let state = loadState();
+
+  hydrateTripForm();
+  renderGroups();
+  renderChecklist();
+
+  tripForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.conditions = readConditionsFromForm();
+    state.items = generatePackingList(state.conditions, state.selectedGroupIds, state.essentialGroups);
+    persist();
+    renderChecklist();
+  });
+
+  groupForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(groupForm);
+    const name = String(formData.get("groupName") || "").trim();
+    const rawItems = String(formData.get("groupItems") || "");
+    const items = rawItems
+      .split(/\r?\n|,/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    if (!name || items.length === 0) {
+      return;
+    }
+
+    const group = {
+      id: makeId(),
+      name,
+      items
+    };
+
+    state.essentialGroups = [group, ...state.essentialGroups];
+    state.selectedGroupIds = Array.from(new Set([group.id, ...state.selectedGroupIds]));
+    groupForm.reset();
+    persist();
+    renderGroups();
+  });
+
+  groupList?.addEventListener("change", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) {
+      return;
+    }
+
+    if (target.name === "selectedGroup") {
+      const groupId = target.value;
+      if (target.checked) {
+        state.selectedGroupIds = Array.from(new Set([...state.selectedGroupIds, groupId]));
+      } else {
+        state.selectedGroupIds = state.selectedGroupIds.filter((id) => id !== groupId);
+      }
+      persist();
+    }
+  });
+
+  groupList?.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+
+    const deleteButton = target.closest("[data-delete-group]");
+    if (!deleteButton) {
+      return;
+    }
+
+    const groupId = deleteButton.getAttribute("data-delete-group");
+    if (!groupId) {
+      return;
+    }
+
+    state.essentialGroups = state.essentialGroups.filter((group) => group.id !== groupId);
+    state.selectedGroupIds = state.selectedGroupIds.filter((id) => id !== groupId);
+    persist();
+    renderGroups();
+  });
+
+  itemForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(itemForm);
+    const name = String(formData.get("itemName") || "").trim();
+    const category = String(formData.get("itemCategory") || "others");
+
+    if (!name) {
+      return;
+    }
+
+    state.items = [
+      ...state.items,
+      {
+        id: makeId(),
+        category,
+        name,
+        checked: false,
+        source: "manual"
+      }
+    ];
+    itemForm.reset();
+    persist();
+    renderChecklist();
+  });
+
+  checklist?.addEventListener("change", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+
+    const row = target.closest("[data-item-id]");
+    const itemId = row?.getAttribute("data-item-id");
+    if (!itemId) {
+      return;
+    }
+
+    const item = state.items.find((entry) => entry.id === itemId);
+    if (!item) {
+      return;
+    }
+
+    if (target instanceof HTMLInputElement && target.type === "checkbox") {
+      item.checked = target.checked;
+    }
+
+    if (target instanceof HTMLInputElement && target.type === "text") {
+      item.name = target.value;
+    }
+
+    if (target instanceof HTMLSelectElement) {
+      item.category = target.value;
+    }
+
+    persist();
+    renderChecklist();
+  });
+
+  checklist?.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+
+    const deleteButton = target.closest("[data-delete-item]");
+    if (!deleteButton) {
+      return;
+    }
+
+    const itemId = deleteButton.getAttribute("data-delete-item");
+    state.items = state.items.filter((item) => item.id !== itemId);
+    persist();
+    renderChecklist();
+  });
+
+  exportButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const format = button.getAttribute("data-export");
+      if (!format || state.items.length === 0) {
+        return;
+      }
+
+      const content = format === "md" ? buildMarkdownExport() : buildTextExport();
+      const extension = format === "md" ? "md" : "txt";
+      const fileNameBase = slugify(state.conditions.tripName || "packing-list");
+      downloadFile(`${fileNameBase}.${extension}`, content);
+    });
+  });
+
+  resetButton?.addEventListener("click", () => {
+    state.items = [];
+    persist();
+    renderChecklist();
+  });
+
+  function hydrateTripForm() {
+    if (!(tripForm instanceof HTMLFormElement)) {
+      return;
+    }
+
+    const conditions = state.conditions;
+    tripForm.tripName.value = conditions.tripName;
+    tripForm.durationDays.value = String(conditions.durationDays);
+    tripForm.destinationType.value = conditions.destinationType;
+    tripForm.purpose.value = conditions.purpose;
+    tripForm.weather.value = conditions.weather;
+    tripForm.laundryAvailable.checked = conditions.laundryAvailable;
+    tripForm.needLaptop.checked = conditions.needLaptop;
+    tripForm.needCamera.checked = conditions.needCamera;
+    tripForm.needFormalWear.checked = conditions.needFormalWear;
+    tripForm.needMedicineReminders.checked = conditions.needMedicineReminders;
+  }
+
+  function readConditionsFromForm() {
+    if (!(tripForm instanceof HTMLFormElement)) {
+      return DEFAULT_STATE.conditions;
+    }
+
+    return {
+      tripName: tripForm.tripName.value.trim(),
+      durationDays: Math.max(1, Number(tripForm.durationDays.value) || 1),
+      destinationType: tripForm.destinationType.value,
+      purpose: tripForm.purpose.value,
+      weather: tripForm.weather.value,
+      laundryAvailable: tripForm.laundryAvailable.checked,
+      needLaptop: tripForm.needLaptop.checked,
+      needCamera: tripForm.needCamera.checked,
+      needFormalWear: tripForm.needFormalWear.checked,
+      needMedicineReminders: tripForm.needMedicineReminders.checked
+    };
+  }
+
+  function renderGroups() {
+    if (!groupList) {
+      return;
+    }
+
+    if (state.essentialGroups.length === 0) {
+      groupList.innerHTML = `<p class="muted">No saved groups yet.</p>`;
+      return;
+    }
+
+    groupList.innerHTML = state.essentialGroups
+      .map((group) => {
+        const checked = state.selectedGroupIds.includes(group.id) ? "checked" : "";
+        const items = group.items.map((item) => `<span class="mini-tag">${item}</span>`).join("");
+        return `
+          <article class="group-card">
+            <label class="group-select">
+              <input type="checkbox" name="selectedGroup" value="${group.id}" ${checked} />
+              <span>Apply on generate</span>
+            </label>
+            <div class="group-card-header">
+              <h4>${group.name}</h4>
+              <button class="icon-button" type="button" data-delete-group="${group.id}">Delete</button>
+            </div>
+            <div class="mini-tag-list">${items}</div>
+          </article>
+        `;
+      })
+      .join("");
+  }
+
+  function renderChecklist() {
+    if (!checklist || !emptyState || !stats) {
+      return;
+    }
+
+    if (state.items.length === 0) {
+      checklist.innerHTML = "";
+      emptyState.hidden = false;
+      stats.textContent = "";
+      return;
+    }
+
+    emptyState.hidden = true;
+    const grouped = groupItems(state.items);
+    const checkedCount = state.items.filter((item) => item.checked).length;
+    stats.textContent = `${checkedCount}/${state.items.length} packed`;
+
+    checklist.innerHTML = Object.entries(grouped)
+      .map(([category, items]) => {
+        const rows = items
+          .map((item) => {
+            const sourceLabel =
+              item.source === "personal" ? "Personal" : item.source === "manual" ? "Manual" : "Generated";
+            return `
+              <div class="item-row" data-item-id="${item.id}">
+                <label class="check-wrap">
+                  <input type="checkbox" ${item.checked ? "checked" : ""} />
+                </label>
+                <input class="item-name" type="text" value="${escapeAttribute(item.name)}" />
+                <select class="item-category">
+                  ${Object.entries(CATEGORY_LABELS)
+                    .map(([value, label]) => `<option value="${value}" ${item.category === value ? "selected" : ""}>${label}</option>`)
+                    .join("")}
+                </select>
+                <span class="source-pill">${sourceLabel}</span>
+                <button class="icon-button" type="button" data-delete-item="${item.id}">Remove</button>
+              </div>
+            `;
+          })
+          .join("");
+
+        return `
+          <section class="checklist-group">
+            <div class="checklist-group-header">
+              <h3>${CATEGORY_LABELS[category]}</h3>
+              <span>${items.length} items</span>
+            </div>
+            <div class="item-list">${rows}</div>
+          </section>
+        `;
+      })
+      .join("");
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        return structuredClone(DEFAULT_STATE);
+      }
+
+      const parsed = JSON.parse(raw);
+      return {
+        conditions: { ...DEFAULT_STATE.conditions, ...parsed.conditions },
+        essentialGroups: Array.isArray(parsed.essentialGroups) ? parsed.essentialGroups : DEFAULT_STATE.essentialGroups,
+        selectedGroupIds: Array.isArray(parsed.selectedGroupIds) ? parsed.selectedGroupIds : DEFAULT_STATE.selectedGroupIds,
+        items: Array.isArray(parsed.items) ? parsed.items : []
+      };
+    } catch {
+      return structuredClone(DEFAULT_STATE);
+    }
+  }
+
+  function persist() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function generatePackingList(conditions, selectedGroupIds, essentialGroups) {
+    const baseItems = [
+      item("documents", "Phone", "generated"),
+      item("electronics", "Phone charger", "generated"),
+      item("others", "Wallet", "generated"),
+      item("documents", "ID card", "generated"),
+      item("clothing", `Underwear x${conditions.durationDays}`, "generated"),
+      item("clothing", `Socks x${conditions.durationDays}`, "generated"),
+      item("clothing", `Tops x${clothingCount(conditions.durationDays, conditions.laundryAvailable)}`, "generated"),
+      item("toiletries", "Toothbrush", "generated"),
+      item("toiletries", "Toothpaste", "generated")
+    ];
+
+    if (conditions.destinationType === "international") {
+      baseItems.push(item("documents", "Passport", "generated"));
+      baseItems.push(item("documents", "International payment card", "generated"));
+      baseItems.push(item("electronics", "Travel adapter", "generated"));
+    }
+
+    if (conditions.weather === "cold") {
+      baseItems.push(item("clothing", "Jacket", "generated"));
+      baseItems.push(item("clothing", "Warm layer", "generated"));
+    }
+
+    if (conditions.weather === "hot") {
+      baseItems.push(item("clothing", "Hat", "generated"));
+      baseItems.push(item("toiletries", "Sunscreen", "generated"));
+    }
+
+    if (conditions.weather === "rainy") {
+      baseItems.push(item("others", "Umbrella or rain jacket", "generated"));
+      baseItems.push(item("others", "Waterproof pouch", "generated"));
+    }
+
+    if (conditions.purpose === "business") {
+      baseItems.push(item("electronics", "Laptop charger", "generated"));
+      baseItems.push(item("documents", "Meeting notes or agenda", "generated"));
+      baseItems.push(item("clothing", "Formal outfit", "generated"));
+    }
+
+    if (conditions.purpose === "outdoor") {
+      baseItems.push(item("others", "Water bottle", "generated"));
+      baseItems.push(item("health", "Bug spray", "generated"));
+      baseItems.push(item("clothing", "Activity wear", "generated"));
+    }
+
+    if (conditions.purpose === "beach") {
+      baseItems.push(item("clothing", "Swimwear", "generated"));
+      baseItems.push(item("clothing", "Sandals", "generated"));
+      baseItems.push(item("toiletries", "After-sun care", "generated"));
+    }
+
+    if (conditions.needLaptop) {
+      baseItems.push(item("electronics", "Laptop", "generated"));
+      baseItems.push(item("electronics", "Laptop charger", "generated"));
+    }
+
+    if (conditions.needCamera) {
+      baseItems.push(item("electronics", "Camera", "generated"));
+      baseItems.push(item("electronics", "Camera battery / charger", "generated"));
+    }
+
+    if (conditions.needFormalWear) {
+      baseItems.push(item("clothing", "Formal shoes", "generated"));
+      baseItems.push(item("clothing", "Formal wear backup", "generated"));
+    }
+
+    if (conditions.needMedicineReminders) {
+      baseItems.push(item("health", "Prescription medicine", "generated"));
+      baseItems.push(item("health", "Basic first-aid items", "generated"));
+    }
+
+    const personalItems = essentialGroups
+      .filter((group) => selectedGroupIds.includes(group.id))
+      .flatMap((group) => group.items.map((name) => item(inferCategory(name), name, "personal")));
+
+    return dedupeItems([...baseItems, ...personalItems]);
+  }
+
+  function dedupeItems(items) {
+    const seen = new Map();
+    for (const entry of items) {
+      const key = `${entry.category}::${entry.name.trim().toLowerCase()}`;
+      if (!seen.has(key)) {
+        seen.set(key, entry);
+      }
+    }
+    return Array.from(seen.values());
+  }
+
+  function clothingCount(days, laundryAvailable) {
+    if (laundryAvailable) {
+      return Math.max(2, Math.ceil(days / 2));
+    }
+    return Math.max(2, days);
+  }
+
+  function inferCategory(name) {
+    const lower = name.toLowerCase();
+    if (/(passport|card|ticket|id)/.test(lower)) return "documents";
+    if (/(shirt|sock|jacket|wear|shoe|hat|swim|pants|underwear)/.test(lower)) return "clothing";
+    if (/(tooth|soap|shampoo|sunscreen|care)/.test(lower)) return "toiletries";
+    if (/(charger|laptop|camera|power|usb|earphone|battery)/.test(lower)) return "electronics";
+    if (/(medicine|tablet|allergy|pain|bandage|first-aid)/.test(lower)) return "health";
+    return "others";
+  }
+
+  function item(category, name, source) {
+    return {
+      id: makeId(),
+      category,
+      name,
+      checked: false,
+      source
+    };
+  }
+
+  function groupItems(items) {
+    const grouped = {
+      documents: [],
+      clothing: [],
+      toiletries: [],
+      electronics: [],
+      health: [],
+      others: []
+    };
+
+    for (const entry of items) {
+      if (!grouped[entry.category]) {
+        grouped.others.push(entry);
+      } else {
+        grouped[entry.category].push(entry);
+      }
+    }
+
+    return Object.fromEntries(Object.entries(grouped).filter(([, value]) => value.length > 0));
+  }
+
+  function buildTextExport() {
+    const title = state.conditions.tripName || "Packing List";
+    const sections = Object.entries(groupItems(state.items)).map(([category, items]) => {
+      const lines = items.map((item) => `- [${item.checked ? "x" : " "}] ${item.name}`);
+      return `${CATEGORY_LABELS[category]}\n${lines.join("\n")}`;
+    });
+
+    return `${title}\n\n${sections.join("\n\n")}\n`;
+  }
+
+  function buildMarkdownExport() {
+    const title = state.conditions.tripName || "Packing List";
+    const sections = Object.entries(groupItems(state.items)).map(([category, items]) => {
+      const lines = items.map((item) => `- [${item.checked ? "x" : " "}] ${item.name}`);
+      return `## ${CATEGORY_LABELS[category]}\n${lines.join("\n")}`;
+    });
+
+    return `# ${title}\n\n${sections.join("\n\n")}\n`;
+  }
+
+  function downloadFile(fileName, content) {
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function slugify(value) {
+    return value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+
+  function escapeAttribute(value) {
+    return value.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+  }
+
+  function makeId() {
+    if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+      return crypto.randomUUID();
+    }
+    return `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }
+</script>
+
+<style>
+  .tool-shell {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .tool-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1.1fr 1.4fr;
+  }
+
+  .secondary-grid {
+    grid-template-columns: 1fr 1.5fr;
+  }
+
+  .tool-card {
+    background: rgba(255, 252, 246, 0.88);
+    border: 1px solid rgba(78, 82, 50, 0.12);
+    border-radius: 28px;
+    padding: 1.5rem;
+    box-shadow: 0 20px 50px rgba(44, 44, 44, 0.08);
+  }
+
+  .section-heading,
+  .saved-groups-header,
+  .checklist-group-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .section-heading h2,
+  .saved-groups-header h3 {
+    margin: 0.2rem 0 0;
+  }
+
+  .trip-form,
+  .group-form {
+    margin-top: 1.25rem;
+  }
+
+  .field-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .compact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field-grid label {
+    display: grid;
+    gap: 0.45rem;
+    font-size: 0.95rem;
+    color: #314136;
+  }
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  select,
+  textarea {
+    width: 100%;
+    border-radius: 16px;
+    border: 1px solid rgba(78, 82, 50, 0.16);
+    background: rgba(255, 255, 255, 0.84);
+    padding: 0.8rem 0.95rem;
+    color: #1e2720;
+  }
+
+  .toggle {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 52px;
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(78, 82, 50, 0.12);
+    border-radius: 18px;
+    background: rgba(246, 240, 225, 0.72);
+  }
+
+  .toggle input {
+    width: 18px;
+    height: 18px;
+  }
+
+  .form-actions,
+  .export-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1rem;
+  }
+
+  .intro-points {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.4rem;
+  }
+
+  .intro-points div {
+    display: grid;
+    gap: 0.25rem;
+    padding: 1rem;
+    border-radius: 18px;
+    background: rgba(246, 240, 225, 0.75);
+  }
+
+  .saved-groups {
+    margin-top: 1.6rem;
+  }
+
+  .group-list,
+  .checklist-groups {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .group-card,
+  .checklist-group {
+    border: 1px solid rgba(78, 82, 50, 0.12);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.76);
+    padding: 1rem;
+  }
+
+  .group-select {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 0.8rem;
+    color: #4a5448;
+  }
+
+  .group-card-header h4,
+  .checklist-group-header h3 {
+    margin: 0;
+  }
+
+  .mini-tag-list,
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .mini-tag {
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(238, 228, 205, 0.86);
+    color: #485241;
+    font-size: 0.82rem;
+  }
+
+  .stats {
+    align-self: center;
+    color: #4b5d4e;
+    font-weight: 600;
+  }
+
+  .add-item-form {
+    display: grid;
+    gap: 0.8rem;
+    grid-template-columns: minmax(0, 1.6fr) minmax(160px, 0.7fr) auto;
+    margin-top: 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .empty-state,
+  .muted,
+  .export-note {
+    color: #5b665d;
+  }
+
+  .item-list {
+    display: grid;
+    gap: 0.8rem;
+    margin-top: 1rem;
+  }
+
+  .item-row {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: auto minmax(0, 1.6fr) minmax(140px, 0.7fr) auto auto;
+    align-items: center;
+  }
+
+  .check-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .item-name {
+    min-width: 0;
+  }
+
+  .source-pill {
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(229, 237, 224, 0.95);
+    color: #2f5735;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .icon-button {
+    border: 0;
+    border-radius: 999px;
+    background: rgba(78, 82, 50, 0.08);
+    color: #314136;
+    padding: 0.45rem 0.75rem;
+    cursor: pointer;
+  }
+
+  .button-ghost {
+    background: transparent;
+    border: 1px solid rgba(78, 82, 50, 0.16);
+    color: #314136;
+  }
+
+  @media (max-width: 1024px) {
+    .tool-grid,
+    .secondary-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .field-grid,
+    .add-item-form,
+    .item-row {
+      grid-template-columns: 1fr;
+    }
+
+    .item-row {
+      border: 1px solid rgba(78, 82, 50, 0.12);
+      border-radius: 18px;
+      padding: 0.85rem;
+    }
+
+    .tool-card {
+      padding: 1.1rem;
+      border-radius: 24px;
+    }
+  }
+</style>

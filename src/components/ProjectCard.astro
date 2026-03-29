@@ -1,0 +1,25 @@
+---
+type Props = {
+  title: string;
+  description: string;
+  type: string;
+  tags: string[];
+  href: string;
+};
+
+const { title, description, type, tags, href } = Astro.props;
+---
+
+<article class="card project-card">
+  <div class="card-meta">
+    <span>{type}</span>
+  </div>
+  <h3><a href={href}>{title}</a></h3>
+  <p>{description}</p>
+  <div class="tag-list">
+    {tags.map((tag) => (
+      <span class="tag">{tag}</span>
+    ))}
+  </div>
+  <a class="inline-link" href={href}>Open</a>
+</article>

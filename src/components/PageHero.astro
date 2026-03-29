@@ -1,0 +1,36 @@
+---
+type Cta = {
+  href: string;
+  label: string;
+  kind?: "primary" | "secondary";
+};
+
+type Props = {
+  eyebrow?: string;
+  title: string;
+  description: string;
+  ctas?: Cta[];
+};
+
+const { eyebrow, title, description, ctas = [] } = Astro.props;
+---
+
+<section class="page-hero">
+  <div class="container">
+    <div class="hero-panel">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1>{title}</h1>
+      <p class="hero-description">{description}</p>
+      {ctas.length > 0 && (
+        <div class="hero-actions">
+          {ctas.map((cta) => (
+            <a class:list={["button", cta.kind === "secondary" && "button-secondary"]} href={cta.href}>
+              {cta.label}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
