@@ -3,4 +3,6 @@ dist/
 .astro/
 .DS_Store
 Thumbs.db
+ian-portal-spec.md
+packing-list-generator-spec.md
 
