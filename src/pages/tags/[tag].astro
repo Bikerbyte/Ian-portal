@@ -1,0 +1,57 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import BlogCard from "../../components/BlogCard.astro";
+import PageHero from "../../components/PageHero.astro";
+import { termSlug } from "../../utils/content";
+import { withBase } from "../../utils/paths";
+
+const posts = await getCollection("blog");
+const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((a, b) => a.localeCompare(b));
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
+
+  return tags.map((tag) => ({
+    params: { tag: termSlug(tag) },
+    props: {
+      tag,
+      posts: posts
+        .filter((post) => post.data.tags.includes(tag))
+        .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+    }
+  }));
+}
+
+const { tag, posts: tagPosts } = Astro.props;
+---
+
+<BaseLayout title={`#${tag}`} description={`${tag} tagged posts`}>
+  <PageHero title={`#${tag}`} description={`${tagPosts.length} post${tagPosts.length > 1 ? "s" : ""}`} />
+
+  <section class="section">
+    <div class="container">
+      <div class="archive-strip">
+        {tags.map((entry) => (
+          <a class:list={["tag-button", entry === tag && "is-active"]} href={withBase(`/tags/${termSlug(entry)}/`)}>
+            {entry}
+          </a>
+        ))}
+      </div>
+
+      <div class="list-stack">
+        {tagPosts.map((post) => (
+          <BlogCard
+            href={`/blog/${post.id.replace(/\.md$/, "")}/`}
+            title={post.data.title}
+            excerpt={post.data.excerpt}
+            date={post.data.date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+            category={post.data.category}
+            tags={post.data.tags}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

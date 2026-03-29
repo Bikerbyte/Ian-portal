@@ -1,0 +1,58 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import BlogCard from "../../components/BlogCard.astro";
+import PageHero from "../../components/PageHero.astro";
+import { termSlug } from "../../utils/content";
+import { withBase } from "../../utils/paths";
+
+const posts = await getCollection("blog");
+const categories = [...new Set(posts.map((post) => post.data.category))];
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  const categories = [...new Set(posts.map((post) => post.data.category))];
+
+  return categories.map((category) => ({
+    params: { category: termSlug(category) },
+    props: {
+      category,
+      posts: posts
+        .filter((post) => post.data.category === category)
+        .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+    }
+  }));
+}
+
+const { category, posts: categoryPosts } = Astro.props;
+---
+
+<BaseLayout title={category} description={`${category} posts`}>
+  <PageHero title={category} description={`${categoryPosts.length} post${categoryPosts.length > 1 ? "s" : ""}`} />
+
+  <section class="section">
+    <div class="container">
+      <div class="archive-strip">
+        {categories.map((entry) => (
+          <a class:list={["tag-button", entry === category && "is-active"]} href={withBase(`/categories/${termSlug(entry)}/`)}>
+            {entry}
+          </a>
+        ))}
+      </div>
+
+      <div class="list-stack">
+        {categoryPosts.map((post) => (
+          <BlogCard
+            href={`/blog/${post.id.replace(/\.md$/, "")}/`}
+            title={post.data.title}
+            excerpt={post.data.excerpt}
+            date={post.data.date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+            category={post.data.category}
+            tags={post.data.tags}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+

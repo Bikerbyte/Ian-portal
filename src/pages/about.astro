@@ -5,53 +5,22 @@ import PageHero from "../components/PageHero.astro";
 
 <BaseLayout
   title="About"
-  description="About Ian Portal, a small personal hub for projects, tools, guides, and study notes."
+  description="About Ian Portal."
 >
   <PageHero
-    eyebrow="About"
-    title="A small portal with room to grow."
-    description="This site is meant to stay light, readable, and useful. It holds the tools I build, the notes I want to keep, and the guide formats that help me think clearly."
+    title="About"
+    description="Notes, tools, route logs, and whatever is still useful later."
   />
 
   <section class="section">
-    <div class="container prose-grid">
-      <article class="card prose-card">
-        <h2>What this site is for</h2>
-        <p>
-          Ian Portal is not just a blog and not just a tool demo. It is the shared home for practical side projects,
-          study notes, compact game guides, and anything else that benefits from being organized instead of lost.
-        </p>
-      </article>
-
-      <article class="card prose-card">
-        <h2>Areas of interest</h2>
-        <ul>
-          <li>Small front-end tools with clear everyday use cases</li>
-          <li>Static-site workflows that stay simple to maintain</li>
-          <li>Game route notes and short-form guide writing</li>
-          <li>Learning notes that are useful later, not just during the first read</li>
-        </ul>
-      </article>
-
-      <article class="card prose-card">
-        <h2>What will live here</h2>
-        <ul>
-          <li>Tools like the Packing List Generator</li>
-          <li>Study notes on web development and content systems</li>
-          <li>Guides and route memos for games</li>
-          <li>Future experiments that deserve a stable landing place</li>
-        </ul>
-      </article>
-
-      <article class="card prose-card">
-        <h2>Current stack</h2>
-        <ul>
-          <li>Astro for static routing and Markdown content collections</li>
-          <li>Vanilla client-side JavaScript for focused interactive tools</li>
-          <li>GitHub Pages deployment with local content-first workflow</li>
-        </ul>
-      </article>
+    <div class="container simple-copy">
+      <p>Mostly Astro, Markdown, and small front-end tools.</p>
+      <ul>
+        <li>study notes</li>
+        <li>game guides</li>
+        <li>travel tools</li>
+        <li>tag archives</li>
+      </ul>
     </div>
   </section>
 </BaseLayout>
-

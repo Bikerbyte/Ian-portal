@@ -7,14 +7,13 @@ import { projects } from "../data/projects";
 
 <BaseLayout title="Projects" description="Projects, tools, experiments, and guides collected in Ian Portal.">
   <PageHero
-    eyebrow="Projects"
-    title="Tools and experiments with clear entry points."
-    description="The first version stays intentionally focused. Each card below points to something usable, readable, or extendable instead of a placeholder shelf."
+    title="Projects"
+    description="Small tools and linked notes."
   />
 
   <section class="section">
     <div class="container">
-      <div class="card-grid">
+      <div class="list-stack">
         {projects.map((project) => (
           <ProjectCard {...project} />
         ))}
@@ -22,4 +21,3 @@ import { projects } from "../data/projects";
     </div>
   </section>
 </BaseLayout>
-

@@ -12,6 +12,10 @@ const { title, description } = Astro.props;
 const pageTitle = title ? `${title} | ${site.title}` : site.title;
 const pageDescription = description ?? site.description;
 const pathname = Astro.url.pathname;
+const footerLinks: { href: string; label: string }[] = [
+  { href: site.githubUrl, label: "GitHub" },
+  site.contactText ? { href: site.contactText, label: "Contact" } : null
+].filter((link): link is { href: string; label: string } => Boolean(link));
 ---
 
 <!doctype html>
@@ -24,7 +28,7 @@ const pathname = Astro.url.pathname;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
@@ -51,13 +55,11 @@ const pathname = Astro.url.pathname;
 
       <footer class="site-footer">
         <div class="container footer-grid">
-          <div>
-            <p class="eyebrow">Ian Portal</p>
-            <p class="footer-copy">{site.footerBlurb}</p>
-          </div>
+          <div class="footer-signoff">{site.title}</div>
           <div class="footer-links">
-            <a href={site.githubUrl} target="_blank" rel="noreferrer">GitHub</a>
-            <span>{site.contactText}</span>
+            {footerLinks.map((link) => (
+              <a href={link.href} target="_blank" rel="noreferrer">{link.label}</a>
+            ))}
           </div>
         </div>
       </footer>

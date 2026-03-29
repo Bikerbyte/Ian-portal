@@ -3,20 +3,41 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageHero from "../../components/PageHero.astro";
 import BlogCard from "../../components/BlogCard.astro";
+import { termSlug } from "../../utils/content";
+import { withBase } from "../../utils/paths";
 
 const posts = (await getCollection("blog")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const categories = [...new Set(posts.map((post) => post.data.category))];
+const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((a, b) => a.localeCompare(b));
 ---
 
 <BaseLayout title="Blog" description="Game guides, study notes, and practical writing collected in Ian Portal.">
   <PageHero
-    eyebrow="Blog"
-    title="Notes, guides, and things worth keeping."
-    description="This section mixes study notes, game route memos, and practical write-ups. The categories may differ, but the writing style stays compact and reusable."
+    title="Blog"
+    description="Posts, notes, and tags."
   />
 
   <section class="section">
     <div class="container">
-      <div class="card-grid">
+      <div class="archive-block">
+        <span class="archive-label">Categories</span>
+        <div class="archive-strip">
+          {categories.map((category) => (
+            <a class="tag-button" href={withBase(`/categories/${termSlug(category)}/`)}>{category}</a>
+          ))}
+        </div>
+      </div>
+
+      <div class="archive-block">
+        <span class="archive-label">Tags</span>
+        <div class="archive-strip">
+          {tags.map((tag) => (
+            <a class="tag-button" href={withBase(`/tags/${termSlug(tag)}/`)}>{tag}</a>
+          ))}
+        </div>
+      </div>
+
+      <div class="list-stack">
         {posts.map((post) => (
           <BlogCard
             href={`/blog/${post.id.replace(/\.md$/, "")}/`}

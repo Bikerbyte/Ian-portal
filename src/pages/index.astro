@@ -4,45 +4,33 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/PageHero.astro";
 import BlogCard from "../components/BlogCard.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import { featuredLinks, projects } from "../data/projects";
+import { projects } from "../data/projects";
 import { site } from "../data/site";
 import { withBase } from "../utils/paths";
+import { termSlug } from "../utils/content";
 
 const posts = (await getCollection("blog")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const recentPosts = posts.slice(0, 2);
+const categories = [...new Set(posts.map((post) => post.data.category))];
 ---
 
 <BaseLayout title="Home" description={site.description}>
   <PageHero
-    eyebrow="Personal Portal"
-    title="Hi, I'm Ian."
-    description="I build small tools, write practical notes, and collect useful things I want to keep around. This site is the shared home for those projects."
+    title="Ian Portal"
+    description={site.tagline}
     ctas={[
-      { href: "/projects/", label: "View Projects" },
-      { href: "/blog/", label: "Read Blog", kind: "secondary" }
+      { href: "/blog/", label: "Blog" },
+      { href: "/tools/packing-list/", label: "Packing List", kind: "secondary" }
     ]}
   />
 
   <section class="section">
     <div class="container">
-      <div class="section-header">
-        <div>
-          <p class="eyebrow">Featured</p>
-          <h2>Useful entry points</h2>
-        </div>
-        <p class="section-copy">
-          The first version stays intentionally small: one real tool, a few pieces of writing, and a layout that can expand later.
-        </p>
-      </div>
-
-      <div class="card-grid feature-grid">
-        {featuredLinks.map((item) => (
-          <article class="card feature-card">
-            <p class="eyebrow">{item.eyebrow}</p>
-            <h3>{item.title}</h3>
-            <p>{item.description}</p>
-            <a class="inline-link" href={withBase(item.href)}>{item.cta}</a>
-          </article>
+      <div class="archive-strip">
+        <span class="archive-label">Browse</span>
+        <a class="tag-button" href={withBase("/projects/")}>Projects</a>
+        {categories.map((category) => (
+          <a class="tag-button" href={withBase(`/categories/${termSlug(category)}/`)}>{category}</a>
         ))}
       </div>
     </div>
@@ -52,40 +40,10 @@ const recentPosts = posts.slice(0, 2);
     <div class="container">
       <div class="section-header">
         <div>
-          <p class="eyebrow">Projects</p>
-          <h2>Current work</h2>
+          <h2>Recent posts</h2>
         </div>
       </div>
-      <div class="card-grid">
-        {projects.slice(0, 3).map((project) => (
-          <ProjectCard {...project} />
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container highlight-strip">
-      <div>
-        <p class="eyebrow">Tool Highlight</p>
-        <h2>Packing List Generator</h2>
-        <p>
-          A practical checklist starter for trip prep. It generates a base list from trip conditions, then lets you add your own essentials and edit everything locally.
-        </p>
-      </div>
-      <a class="button" href={withBase("/tools/packing-list/")}>Open the Tool</a>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <div>
-          <p class="eyebrow">Recent Posts</p>
-          <h2>Latest notes and guides</h2>
-        </div>
-      </div>
-      <div class="card-grid">
+      <div class="list-stack">
         {recentPosts.map((post) => (
           <BlogCard
             href={`/blog/${post.id.replace(/\.md$/, "")}/`}
@@ -95,6 +53,21 @@ const recentPosts = posts.slice(0, 2);
             category={post.data.category}
             tags={post.data.tags}
           />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <h2>Projects</h2>
+        </div>
+      </div>
+      <div class="list-stack">
+        {projects.map((project) => (
+          <ProjectCard {...project} />
         ))}
       </div>
     </div>
