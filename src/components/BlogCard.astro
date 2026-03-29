@@ -7,22 +7,16 @@ type Props = {
   excerpt: string;
   date: string;
   category: string;
-  tags: string[];
 };
 
-const { href, title, excerpt, date, category, tags } = Astro.props;
+const { href, title, excerpt, date, category } = Astro.props;
 ---
 
-<article class="post-preview">
+<article class="post-preview" data-post-card data-category={category.toLowerCase()} data-search={`${title} ${excerpt} ${category}`.toLowerCase()}>
   <div class="card-meta">
     <span>{category}</span>
     <span>{date}</span>
   </div>
   <h3><a href={withBase(href)}>{title}</a></h3>
   <p>{excerpt}</p>
-  <div class="tag-list">
-    {tags.map((tag) => (
-      <span class="tag">{tag}</span>
-    ))}
-  </div>
 </article>

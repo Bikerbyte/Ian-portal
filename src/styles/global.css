@@ -193,7 +193,9 @@ h3 {
 
 .button,
 button.button,
-.tag-button {
+.tag-button,
+.search-field input,
+.select-field select {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -205,6 +207,13 @@ button.button,
   color: var(--text);
   font: inherit;
   transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+
+.search-field input,
+.select-field select {
+  width: 100%;
+  justify-content: flex-start;
+  appearance: none;
 }
 
 .button:hover,
@@ -389,6 +398,32 @@ button.button:hover,
   margin-bottom: 0.65rem;
 }
 
+.blog-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(180px, 0.7fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.search-field,
+.select-field {
+  display: grid;
+}
+
+.search-summary,
+.search-empty {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.search-summary {
+  margin-bottom: 1rem;
+}
+
+.search-empty {
+  margin-top: 1rem;
+}
+
 .simple-copy {
   max-width: 640px;
 }
@@ -489,6 +524,10 @@ button.button:hover,
   .footer-grid {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .blog-controls {
+    grid-template-columns: 1fr;
   }
 
   .main-nav {

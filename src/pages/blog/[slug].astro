@@ -2,7 +2,6 @@
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { withBase } from "../../utils/paths";
-import { termSlug } from "../../utils/content";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -25,16 +24,11 @@ const nextPost = index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1]
     <div class="container post-layout">
       <article class="post-article">
         <div class="post-meta">
-          <a href={withBase(`/categories/${termSlug(post.data.category)}/`)}>{post.data.category}</a>
+          <span>{post.data.category}</span>
           <span>{post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric" })}</span>
           <span>{Math.max(3, Math.ceil(post.body.split(/\s+/).length / 180))} 分鐘</span>
         </div>
         <h1>{post.data.title}</h1>
-        <div class="tag-list">
-          {post.data.tags.map((tag) => (
-            <a class="tag" href={withBase(`/tags/${termSlug(tag)}/`)}>{tag}</a>
-          ))}
-        </div>
         <div class="post-content">
           <Content />
         </div>

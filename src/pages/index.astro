@@ -56,7 +56,6 @@ const recentPosts = posts.slice(0, 3);
             excerpt={post.data.excerpt}
             date={post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "short", day: "numeric" })}
             category={post.data.category}
-            tags={post.data.tags}
           />
         ))}
       </div>
