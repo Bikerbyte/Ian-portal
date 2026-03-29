@@ -34,6 +34,18 @@ a {
   text-decoration: none;
 }
 
+.post-content a,
+.simple-copy a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.post-content a:hover,
+.simple-copy a:hover {
+  color: #14486b;
+}
+
 img {
   display: block;
   max-width: 100%;
