@@ -1,4 +1,6 @@
 ---
+import { withBase } from "../utils/paths";
+
 type Props = {
   href: string;
   title: string;
@@ -16,7 +18,7 @@ const { href, title, excerpt, date, category, tags } = Astro.props;
     <span>{category}</span>
     <span>{date}</span>
   </div>
-  <h3><a href={href}>{title}</a></h3>
+  <h3><a href={withBase(href)}>{title}</a></h3>
   <p>{excerpt}</p>
   <div class="tag-list">
     {tags.map((tag) => (
@@ -24,4 +26,3 @@ const { href, title, excerpt, date, category, tags } = Astro.props;
     ))}
   </div>
 </article>
-

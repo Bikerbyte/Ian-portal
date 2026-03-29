@@ -1,4 +1,6 @@
 ---
+import { withBase } from "../utils/paths";
+
 type Cta = {
   href: string;
   label: string;
@@ -24,7 +26,7 @@ const { eyebrow, title, description, ctas = [] } = Astro.props;
       {ctas.length > 0 && (
         <div class="hero-actions">
           {ctas.map((cta) => (
-            <a class:list={["button", cta.kind === "secondary" && "button-secondary"]} href={cta.href}>
+            <a class:list={["button", cta.kind === "secondary" && "button-secondary"]} href={withBase(cta.href)}>
               {cta.label}
             </a>
           ))}
@@ -33,4 +35,3 @@ const { eyebrow, title, description, ctas = [] } = Astro.props;
     </div>
   </div>
 </section>
-

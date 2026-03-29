@@ -1,4 +1,6 @@
 ---
+import { withBase } from "../utils/paths";
+
 type Props = {
   title: string;
   description: string;
@@ -14,12 +16,12 @@ const { title, description, type, tags, href } = Astro.props;
   <div class="card-meta">
     <span>{type}</span>
   </div>
-  <h3><a href={href}>{title}</a></h3>
+  <h3><a href={withBase(href)}>{title}</a></h3>
   <p>{description}</p>
   <div class="tag-list">
     {tags.map((tag) => (
       <span class="tag">{tag}</span>
     ))}
   </div>
-  <a class="inline-link" href={href}>Open</a>
+  <a class="inline-link" href={withBase(href)}>Open</a>
 </article>

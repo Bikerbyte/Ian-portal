@@ -6,6 +6,7 @@ import BlogCard from "../components/BlogCard.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import { featuredLinks, projects } from "../data/projects";
 import { site } from "../data/site";
+import { withBase } from "../utils/paths";
 
 const posts = (await getCollection("blog")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const recentPosts = posts.slice(0, 2);
@@ -40,7 +41,7 @@ const recentPosts = posts.slice(0, 2);
             <p class="eyebrow">{item.eyebrow}</p>
             <h3>{item.title}</h3>
             <p>{item.description}</p>
-            <a class="inline-link" href={item.href}>{item.cta}</a>
+            <a class="inline-link" href={withBase(item.href)}>{item.cta}</a>
           </article>
         ))}
       </div>
@@ -72,7 +73,7 @@ const recentPosts = posts.slice(0, 2);
           A practical checklist starter for trip prep. It generates a base list from trip conditions, then lets you add your own essentials and edit everything locally.
         </p>
       </div>
-      <a class="button" href="/tools/packing-list/">Open the Tool</a>
+      <a class="button" href={withBase("/tools/packing-list/")}>Open the Tool</a>
     </div>
   </section>
 

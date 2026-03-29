@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { withBase } from "../../utils/paths";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -42,9 +43,9 @@ const nextPost = index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1]
       <aside class="post-sidebar">
         <div class="card sidebar-card">
           <p class="eyebrow">More writing</p>
-          {previousPost && <a href={`/blog/${previousPost.id.replace(/\.md$/, "")}/`}>Previous: {previousPost.data.title}</a>}
-          {nextPost && <a href={`/blog/${nextPost.id.replace(/\.md$/, "")}/`}>Next: {nextPost.data.title}</a>}
-          <a href="/blog/">Back to blog index</a>
+          {previousPost && <a href={withBase(`/blog/${previousPost.id.replace(/\.md$/, "")}/`)}>Previous: {previousPost.data.title}</a>}
+          {nextPost && <a href={withBase(`/blog/${nextPost.id.replace(/\.md$/, "")}/`)}>Next: {nextPost.data.title}</a>}
+          <a href={withBase("/blog/")}>Back to blog index</a>
         </div>
       </aside>
     </div>

@@ -1,6 +1,7 @@
 ---
 import { navItems, site } from "../data/site";
 import "../styles/global.css";
+import { withBase } from "../utils/paths";
 
 type Props = {
   title?: string;
@@ -31,14 +32,14 @@ const pathname = Astro.url.pathname;
     <div class="site-shell">
       <header class="site-header">
         <div class="container header-inner">
-          <a class="brand" href="/">
+          <a class="brand" href={withBase("/")}>
             <span class="brand-kicker">Ian</span>
             <span class="brand-name">Portal</span>
           </a>
 
           <nav aria-label="Main navigation" class="main-nav">
             {navItems.map((item) => (
-              <a class:list={[pathname === item.href && "is-active"]} href={item.href}>{item.label}</a>
+              <a class:list={[pathname === item.href && "is-active"]} href={withBase(item.href)}>{item.label}</a>
             ))}
           </nav>
         </div>
