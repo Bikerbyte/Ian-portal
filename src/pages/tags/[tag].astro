@@ -46,7 +46,7 @@ const { tag, posts: tagPosts } = Astro.props;
             href={`/blog/${post.id.replace(/\.md$/, "")}/`}
             title={post.data.title}
             excerpt={post.data.excerpt}
-            date={post.data.date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+            date={post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "short", day: "numeric" })}
             category={post.data.category}
             tags={post.data.tags}
           />

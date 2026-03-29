@@ -8,8 +8,9 @@ export const site = {
 };
 
 export const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/projects/", label: "Projects" },
-  { href: "/blog/", label: "Blog" },
-  { href: "/about/", label: "About" }
+  { href: "/", label: "首頁" },
+  { href: "/projects/", label: "工具" },
+  { href: "/blog/", label: "文章" },
+  { href: "/about/", label: "關於" }
 ];
+

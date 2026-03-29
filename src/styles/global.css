@@ -212,6 +212,13 @@ button.button:hover,
   font-size: 0.98rem;
 }
 
+.home-intro {
+  margin-bottom: 1rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 1.02rem;
+}
+
 .home-links a {
   position: relative;
   padding-bottom: 0.15rem;
@@ -410,6 +417,10 @@ button.button:hover,
 
   .home-links {
     justify-content: flex-start;
+  }
+
+  .home-intro {
+    text-align: left;
   }
 
   h1 {

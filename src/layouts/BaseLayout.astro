@@ -14,12 +14,12 @@ const pageDescription = description ?? site.description;
 const pathname = Astro.url.pathname;
 const footerLinks: { href: string; label: string }[] = [
   { href: site.githubUrl, label: "GitHub" },
-  site.contactText ? { href: site.contactText, label: "Contact" } : null
+  site.contactText ? { href: site.contactText, label: "聯絡" } : null
 ].filter((link): link is { href: string; label: string } => Boolean(link));
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="zh-Hant">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -66,3 +66,4 @@ const footerLinks: { href: string; label: string }[] = [
     </div>
   </body>
 </html>
+

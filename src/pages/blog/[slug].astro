@@ -26,8 +26,8 @@ const nextPost = index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1]
       <article class="post-article">
         <div class="post-meta">
           <a href={withBase(`/categories/${termSlug(post.data.category)}/`)}>{post.data.category}</a>
-          <span>{post.data.date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</span>
-          <span>{Math.max(3, Math.ceil(post.body.split(/\s+/).length / 180))} min read</span>
+          <span>{post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric" })}</span>
+          <span>{Math.max(3, Math.ceil(post.body.split(/\s+/).length / 180))} 分鐘</span>
         </div>
         <h1>{post.data.title}</h1>
         <div class="tag-list">

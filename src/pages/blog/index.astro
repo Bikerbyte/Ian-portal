@@ -11,11 +11,8 @@ const categories = [...new Set(posts.map((post) => post.data.category))];
 const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((a, b) => a.localeCompare(b));
 ---
 
-<BaseLayout title="Blog" description="Game guides, study notes, and practical writing collected in Ian Portal.">
-  <PageHero
-    title="Blog"
-    description="文章、分類、標籤。"
-  />
+<BaseLayout title="文章" description="文章分類與標籤整理。">
+  <PageHero title="文章" description="文章、分類、標籤。" />
 
   <section class="section">
     <div class="container">
@@ -43,7 +40,7 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((a, b) =
             href={`/blog/${post.id.replace(/\.md$/, "")}/`}
             title={post.data.title}
             excerpt={post.data.excerpt}
-            date={post.data.date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+            date={post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "short", day: "numeric" })}
             category={post.data.category}
             tags={post.data.tags}
           />
@@ -52,3 +49,4 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((a, b) =
     </div>
   </section>
 </BaseLayout>
+
