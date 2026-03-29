@@ -1,62 +1,40 @@
 ---
-title: "Shadow Keep Route Notes for a Clean Elden Ring Run"
-excerpt: "A compact route plan that keeps upgrades, fragments, and boss prep in a sane order when you're exploring Shadow Keep."
+title: "示範遊戲攻略頁：開荒路線整理"
+excerpt: "這是一篇中文 demo，用來展示之後可以放遊戲攻略、路線筆記與重點提醒。"
 date: 2026-03-24
-category: "Game Guide"
+category: "遊戲攻略"
 tags:
-  - Elden Ring
-  - Shadow of the Erdtree
-  - Route Planning
+  - Demo
+  - 遊戲
+  - 路線
 featured: true
 ---
 
-When I write game guides for myself, I care less about 100% completion and more about maintaining momentum.  
-Shadow Keep is one of those places that gets messy fast if I keep bouncing between ladders, side wings, and elevators without a route.
+這篇先當作中文示範頁，用來測試版型、分類和標籤顯示。
 
-## Route Goal
+## 可以放什麼
 
-The goal is simple:
+- 開荒順序
+- 地圖重點
+- 王前準備
+- 容易漏掉的道具
 
-- get key pickups early
-- unlock the main shortcuts
-- avoid missing easy fragment checks
-- preserve enough flexibility to branch into nearby zones later
+## 範例段落
 
-## My Practical Order
+真正開始寫之後，可以把攻略拆成幾個小節，每一節只講一件事，像是順路撿的東西、建議先開的捷徑、或是哪一段其實可以先跳過。
 
-### 1. Enter with a reset in mind
+### 1. 先寫重點路線
 
-Before going too deep, I make sure my Flask allocation, arrows, and throwables are already sorted.  
-Shadow Keep has enough layered enemy pressure that "I'll fix it later" usually means I waste one or two runs.
+先把最短可行路線寫清楚，這樣讀的人可以先跑完主線，再決定要不要補支線。
 
-### 2. Prioritize vertical shortcuts
+### 2. 補容易漏掉的提醒
 
-If a section offers progress and a shortcut, I take the shortcut first.  
-That keeps later cleanup much faster and makes experimentation less punishing.
+像是某個寶箱、某個捷徑、某個 NPC 分支，如果很容易錯過，就另外列成短句。
 
-### 3. Grab obvious utility drops immediately
+### 3. 保持篇幅乾淨
 
-Any fragment, key item, cookbook, or route-opening lever gets priority over normal loot.  
-This is mostly a discipline rule: cool armor can wait if it does not change the route.
+這個站比較適合放實用型筆記，不用一開始就寫成超長百科。
 
-## What I Skip on First Pass
+## 總結
 
-- decorative dead ends with only common loot
-- prolonged enemy clears
-- repeated attempts at optional rooms that are already proving inefficient
-
-That first pass should feel like establishing structure, not squeezing the map dry.
-
-## Build Reminder
-
-For my own runs, Shadow Keep feels much smoother if I arrive with:
-
-- one dependable ranged pull option
-- enough poise or spacing discipline to handle layered melees
-- a fast punish tool for messy stair fights
-
-## Final Note
-
-This kind of route note is exactly why I want the portal to exist.  
-I do not need a massive wiki entry every time. I need short, reusable notes I can trust later.
-
+之後如果你要補真正內容，直接把這篇換掉就行，分類和文章列表會自動更新。

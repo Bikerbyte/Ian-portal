@@ -28,7 +28,7 @@ const { category, posts: categoryPosts } = Astro.props;
 ---
 
 <BaseLayout title={category} description={`${category} posts`}>
-  <PageHero title={category} description={`${categoryPosts.length} post${categoryPosts.length > 1 ? "s" : ""}`} />
+  <PageHero title={category} description={`${categoryPosts.length} 篇文章`} />
 
   <section class="section">
     <div class="container">
@@ -55,4 +55,3 @@ const { category, posts: categoryPosts } = Astro.props;
     </div>
   </section>
 </BaseLayout>
-

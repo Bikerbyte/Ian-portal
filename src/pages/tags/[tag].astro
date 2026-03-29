@@ -28,7 +28,7 @@ const { tag, posts: tagPosts } = Astro.props;
 ---
 
 <BaseLayout title={`#${tag}`} description={`${tag} tagged posts`}>
-  <PageHero title={`#${tag}`} description={`${tagPosts.length} post${tagPosts.length > 1 ? "s" : ""}`} />
+  <PageHero title={`#${tag}`} description={`${tagPosts.length} 篇文章`} />
 
   <section class="section">
     <div class="container">

@@ -2,22 +2,8 @@ export const projects = [
   {
     title: "Packing List Generator",
     type: "Tool",
-    description: "Trip packing checklist with local save and export.",
+    description: "旅行清單工具，支援條件生成、勾選、儲存與匯出。",
     tags: ["Travel", "Checklist", "localStorage"],
     href: "/tools/packing-list/"
-  },
-  {
-    title: "Portal Content System",
-    type: "Experiment",
-    description: "Astro content collections for notes, tags, and archive pages.",
-    tags: ["Astro", "Content Collections", "Static Site"],
-    href: "/blog/"
-  },
-  {
-    title: "Route Notes Format",
-    type: "Guide",
-    description: "A compact game-guide format for route notes and checkpoints.",
-    tags: ["Guides", "Games", "Notes"],
-    href: "/blog/elden-ring-shadow-keep-route/"
   }
 ];

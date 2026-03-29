@@ -14,13 +14,13 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((a, b) =
 <BaseLayout title="Blog" description="Game guides, study notes, and practical writing collected in Ian Portal.">
   <PageHero
     title="Blog"
-    description="Posts, notes, and tags."
+    description="文章、分類、標籤。"
   />
 
   <section class="section">
     <div class="container">
       <div class="archive-block">
-        <span class="archive-label">Categories</span>
+        <span class="archive-label">分類</span>
         <div class="archive-strip">
           {categories.map((category) => (
             <a class="tag-button" href={withBase(`/categories/${termSlug(category)}/`)}>{category}</a>
@@ -29,7 +29,7 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((a, b) =
       </div>
 
       <div class="archive-block">
-        <span class="archive-label">Tags</span>
+        <span class="archive-label">標籤</span>
         <div class="archive-strip">
           {tags.map((tag) => (
             <a class="tag-button" href={withBase(`/tags/${termSlug(tag)}/`)}>{tag}</a>

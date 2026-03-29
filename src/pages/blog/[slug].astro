@@ -42,9 +42,9 @@ const nextPost = index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1]
 
       <aside class="post-sidebar">
         <div class="sidebar-card">
-          {previousPost && <a href={withBase(`/blog/${previousPost.id.replace(/\.md$/, "")}/`)}>Previous: {previousPost.data.title}</a>}
-          {nextPost && <a href={withBase(`/blog/${nextPost.id.replace(/\.md$/, "")}/`)}>Next: {nextPost.data.title}</a>}
-          <a href={withBase("/blog/")}>Back to blog index</a>
+          {previousPost && <a href={withBase(`/blog/${previousPost.id.replace(/\.md$/, "")}/`)}>上一篇：{previousPost.data.title}</a>}
+          {nextPost && <a href={withBase(`/blog/${nextPost.id.replace(/\.md$/, "")}/`)}>下一篇：{nextPost.data.title}</a>}
+          <a href={withBase("/blog/")}>回文章列表</a>
         </div>
       </aside>
     </div>

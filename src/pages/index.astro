@@ -7,11 +7,9 @@ import ProjectCard from "../components/ProjectCard.astro";
 import { projects } from "../data/projects";
 import { site } from "../data/site";
 import { withBase } from "../utils/paths";
-import { termSlug } from "../utils/content";
 
 const posts = (await getCollection("blog")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const recentPosts = posts.slice(0, 2);
-const categories = [...new Set(posts.map((post) => post.data.category))];
 ---
 
 <BaseLayout title="Home" description={site.description}>
@@ -19,19 +17,16 @@ const categories = [...new Set(posts.map((post) => post.data.category))];
     title="Ian Portal"
     description={site.tagline}
     ctas={[
-      { href: "/blog/", label: "Blog" },
-      { href: "/tools/packing-list/", label: "Packing List", kind: "secondary" }
+      { href: "/blog/", label: "文章" },
+      { href: "/tools/packing-list/", label: "工具", kind: "secondary" }
     ]}
   />
 
   <section class="section">
     <div class="container">
-      <div class="archive-strip">
-        <span class="archive-label">Browse</span>
-        <a class="tag-button" href={withBase("/projects/")}>Projects</a>
-        {categories.map((category) => (
-          <a class="tag-button" href={withBase(`/categories/${termSlug(category)}/`)}>{category}</a>
-        ))}
+      <div class="home-links">
+        <a href={withBase("/projects/")}>Packing List Generator</a>
+        <a href={withBase("/blog/")}>文章列表</a>
       </div>
     </div>
   </section>
@@ -40,7 +35,7 @@ const categories = [...new Set(posts.map((post) => post.data.category))];
     <div class="container">
       <div class="section-header">
         <div>
-          <h2>Recent posts</h2>
+          <h2>最新文章</h2>
         </div>
       </div>
       <div class="list-stack">
@@ -62,7 +57,7 @@ const categories = [...new Set(posts.map((post) => post.data.category))];
     <div class="container">
       <div class="section-header">
         <div>
-          <h2>Projects</h2>
+          <h2>工具</h2>
         </div>
       </div>
       <div class="list-stack">

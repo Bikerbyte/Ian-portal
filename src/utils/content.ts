@@ -7,10 +7,19 @@ export function postUrl(id: string) {
 }
 
 export function termSlug(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
+  return Array.from(value.normalize("NFKC").trim().toLowerCase())
+    .map((char) => {
+      if (/^[a-z0-9]$/.test(char)) {
+        return char;
+      }
+
+      if (/^[\s/_-]$/.test(char)) {
+        return "-";
+      }
+
+      return `u${char.codePointAt(0)?.toString(16)}`;
+    })
+    .join("")
+    .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
-

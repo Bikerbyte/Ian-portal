@@ -1,65 +1,38 @@
 ---
-title: "Astro Content Collections Notes for a Small Personal Portal"
-excerpt: "A few practical rules that make Astro content collections feel maintainable when a site mixes posts, guides, and tools."
+title: "示範學習筆記頁：整理一個小型知識站"
+excerpt: "這是一篇中文 demo，用來展示學習筆記、工具心得或整理型文章的版面。"
 date: 2026-03-18
-category: "Study Notes"
+category: "學習筆記"
 tags:
+  - Demo
+  - 筆記
   - Astro
-  - Content Collections
-  - Static Sites
 featured: true
 ---
 
-Content collections are one of the main reasons Astro fits a portal-style site so well.  
-I can keep articles in Markdown, validate frontmatter, and still render everything through one clean layout system.
+這篇也是示範內容，先用來確認文章頁、列表頁和標籤頁的視覺長相。
 
-## Why It Works Well Here
+## 之後可以怎麼寫
 
-This project is not only a blog. It is also a home for side tools, notes, and future guides.  
-That means the content model needs to stay structured without turning into a full CMS.
+- 技術筆記
+- 開發紀錄
+- 工具心得
+- 學習摘要
 
-## Rules I Want to Keep
+## 文章節奏
 
-### 1. Keep frontmatter small
+### 1. 先寫結論
 
-Only store what the listing pages genuinely need:
+如果是一篇整理文，前面先放結論，會比鋪陳太久更適合這種個人站。
 
-- title
-- excerpt
-- date
-- category
-- tags
-- featured flag
+### 2. 內文切短段
 
-If a field does not change the UI or filtering, I do not add it yet.
+短段落、短標題、短清單，比較適合日後自己回來查。
 
-### 2. Let collections validate early
+### 3. 留一些標籤
 
-Schema validation helps me catch the annoying mistakes:
+標籤可以慢慢累積，之後自然就能長出 archive 頁。
 
-- missing dates
-- inconsistent tag types
-- accidental frontmatter drift
+## 總結
 
-That matters more once the site grows past a few demo posts.
-
-### 3. Separate layout from content
-
-Markdown files should stay focused on the writing itself.  
-The page chrome, metadata treatment, and related links belong in Astro components and layouts.
-
-## Good Fit for GitHub Pages
-
-Because the site builds statically, the workflow stays simple:
-
-- write locally
-- commit content
-- build once
-- deploy the generated files
-
-That is a comfortable baseline for a personal site that still wants a few interactive tools.
-
-## Takeaway
-
-If the site keeps expanding, content collections give me a strong middle ground between raw Markdown folders and a heavier content platform.
-
+等你之後開始正式寫內容，直接把這篇改成真正的學習筆記就可以了。

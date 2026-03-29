@@ -1,7 +1,7 @@
 export const site = {
   title: "Ian Portal",
-  tagline: "Notes, tools, and tags.",
-  description: "A simple personal site for notes, side tools, and tagged posts.",
+  tagline: "筆記、工具、清單。",
+  description: "簡單的個人網站，放筆記、工具和文章分類。",
   githubUrl: "https://github.com/Bikerbyte",
   contactText: "",
   footerBlurb: ""
