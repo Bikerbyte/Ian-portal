@@ -28,9 +28,28 @@ Ansible 架構其實非常簡單，分有以下兩種角色：
 ## 安裝方式 (以 Ubuntu 為例)
 
 ## Ansible Ad-Hoc 指令
-``ansible <host group> -m <module> -a <module args>``
--m 後方代入模組名稱 (如: ping、apt、shell 等)
--a 則代入模組的 parameters
+Ad-Hoc 指令為 Ansible 提供的 cli 指令，適合開發與測試驗證使用。  
+<br>
+以此指令作為例子 ``ansible <host group> -m <module> -a <module args>``  
+-m 後方代入模組名稱 (如: ping、apt、shell 等)  
+-a 則代入模組的 arguments  
+<br>
+其他的 Ansible Ad-Hoc 應用如下表：
+
+| 參數 / 選項             | 說明 | 範例 |
+|------------------------|------|------|
+| **-m MODULE**          | 指定要使用的模組，例如 `ping`、`shell`、`copy` | ``ansible all -m ping`` |
+| **-a 'ARGS'**           | 模組的 arguments（模組參數） | ``ansible all -m shell -a "uptime"`` |
+| **-i INVENTORY**        | 指定 inventory 檔案 | ``ansible all -i ./hosts -m ping`` |
+| **-u USER**             | 指定登入主機的帳號 | ``ansible all -u admin -m ping`` |
+| **-k / --ask-pass**     | 問 SSH 密碼（適用於非 key 登入） | ``ansible all -m ping -k`` |
+| **--become**            | 使用 sudo/root 權限執行 | ``ansible all -m apt -a "name=nginx state=present" --become`` |
+| **--ask-become-pass**   | 問 sudo 密碼 | ``ansible all -m apt -a "name=nginx state=present" --become --ask-become-pass`` |
+| **-e EXTRA_VARS**       | 傳遞額外變數 | ``ansible all -e "var1=value1 var2=value2"`` |
+| **-f FORKS**            | 同時執行的主機數（預設 5） | ``ansible all -m ping -f 10`` |
+| **--limit HOST_PATTERN**| 限制執行的主機範圍 | ``ansible all -m ping --limit web1`` |
+| **--timeout SECS**      | SSH 連線逾時秒數（預設 10） | ``ansible all -m ping --timeout 20`` |
+| **-v / -vvv**           | 顯示詳細輸出（debug mode） | ``ansible all -m ping -vvv`` |
 
 ## Ansible 常用的模組(module)
 
