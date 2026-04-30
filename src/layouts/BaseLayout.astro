@@ -25,6 +25,7 @@ const footerLinks: { href: string; label: string }[] = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -37,8 +38,8 @@ const footerLinks: { href: string; label: string }[] = [
       <header class="site-header">
         <div class="container header-inner">
           <a class="brand" href={withBase("/")}>
-            <span class="brand-kicker">Ian</span>
-            <span class="brand-name">Portal</span>
+            <span class="brand-kicker">Bikerbyte</span>
+            <span class="brand-name">{site.title}</span>
           </a>
 
           <nav aria-label="Main navigation" class="main-nav">
@@ -66,4 +67,3 @@ const footerLinks: { href: string; label: string }[] = [
     </div>
   </body>
 </html>
-

@@ -8,7 +8,6 @@ import { isPublicTag } from "../utils/content";
 
 const posts = (await getCollection("blog")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const recentPosts = posts.slice(0, 3);
-const featuredPost = posts.find((post) => post.data.featured) ?? posts[0];
 const publicTags = [...new Set(posts.flatMap((post) => post.data.tags).filter(isPublicTag))].slice(0, 8);
 const categories = [...new Set(posts.map((post) => post.data.category))];
 ---
@@ -17,10 +16,10 @@ const categories = [...new Set(posts.map((post) => post.data.category))];
   <section class="home-hero section">
     <div class="container home-hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow">Ian Portal / Dev Notes</p>
-        <h1>把踩過的坑，整理成下次能走的路。</h1>
+        <p class="eyebrow">Ian Notes / Dev Notes</p>
+        <h1>學習紀錄與生活剪輯</h1>
         <p class="hero-description">
-          這裡收著 IaC、Observability、雲端與日常開發筆記。寫給未來的自己，也寫給正在摸索同一段路的人。
+          留下一些自己容易遺忘的內容。
         </p>
         <div class="hero-actions">
           <a class="button" href={withBase("/blog/")}>閱讀文章</a>
@@ -44,13 +43,6 @@ const categories = [...new Set(posts.map((post) => post.data.category))];
       </div>
 
       <div class="hero-photos home-hero-board" aria-label="首頁視覺看板">
-        {featuredPost && (
-          <a class="home-feature-note" href={withBase(`/blog/${featuredPost.id.replace(/\.md$/, "")}/`)}>
-            <span class="archive-label">Featured</span>
-            <strong>{featuredPost.data.title}</strong>
-            <span>{featuredPost.data.excerpt}</span>
-          </a>
-        )}
         <figure class="hero-photo hero-photo-large">
           <img src={withBase("/images/home-japan-1.jpg")} alt="Japan trip photo" loading="eager" />
         </figure>
