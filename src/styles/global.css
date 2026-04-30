@@ -458,11 +458,13 @@ button.button:hover,
 }
 
 .post-content h2 {
+  scroll-margin-top: 1.5rem;
   margin-top: 2.2rem;
   margin-bottom: 0.6rem;
 }
 
 .post-content h3 {
+  scroll-margin-top: 1.5rem;
   margin-top: 1.6rem;
   margin-bottom: 0.4rem;
   font-size: 1.2rem;
@@ -554,6 +556,45 @@ button.button:hover,
   font-size: 0.95rem;
 }
 
+.post-sidebar {
+  position: sticky;
+  top: 1.5rem;
+  display: grid;
+  gap: 1.4rem;
+}
+
+.sidebar-title {
+  margin: 0 0 0.15rem;
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.toc-card {
+  padding-left: 1rem;
+  border-left: 1px solid var(--line-strong);
+}
+
+.toc-links {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.toc-links a {
+  line-height: 1.45;
+}
+
+.toc-links a:hover {
+  color: var(--accent);
+}
+
+.toc-depth-3 {
+  padding-left: 0.85rem;
+  font-size: 0.9rem;
+}
+
 .sidebar-card a:hover,
 .post-meta a:hover {
   color: var(--accent);
@@ -592,6 +633,21 @@ button.button:hover,
   .post-layout {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+
+  .post-sidebar {
+    position: static;
+    order: -1;
+  }
+
+  .toc-card {
+    padding: 0 0 1rem;
+    border-left: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .toc-links {
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   }
 
   .hero-photo-small {

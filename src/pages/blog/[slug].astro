@@ -12,11 +12,12 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 const allPosts = (await getCollection("blog")).sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
 const index = allPosts.findIndex((entry) => entry.id === post.id);
 const previousPost = index > 0 ? allPosts[index - 1] : null;
 const nextPost = index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1] : null;
+const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
 ---
 
 <BaseLayout title={post.data.title} description={post.data.excerpt}>
@@ -35,6 +36,19 @@ const nextPost = index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1]
       </article>
 
       <aside class="post-sidebar">
+        {tocHeadings.length > 0 && (
+          <nav class="sidebar-card toc-card" aria-label="文章目錄">
+            <p class="sidebar-title">文章目錄</p>
+            <div class="toc-links">
+              {tocHeadings.map((heading) => (
+                <a class:list={[`toc-depth-${heading.depth}`]} href={`#${heading.slug}`}>
+                  {heading.text}
+                </a>
+              ))}
+            </div>
+          </nav>
+        )}
+
         <div class="sidebar-card">
           {previousPost && <a href={withBase(`/blog/${previousPost.id.replace(/\.md$/, "")}/`)}>上一篇：{previousPost.data.title}</a>}
           {nextPost && <a href={withBase(`/blog/${nextPost.id.replace(/\.md$/, "")}/`)}>下一篇：{nextPost.data.title}</a>}
