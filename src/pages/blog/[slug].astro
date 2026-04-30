@@ -18,6 +18,19 @@ const index = allPosts.findIndex((entry) => entry.id === post.id);
 const previousPost = index > 0 ? allPosts[index - 1] : null;
 const nextPost = index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1] : null;
 const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+const plainBody = post.body
+  .replace(/```[\s\S]*?```/g, " ")
+  .replace(/`[^`]+`/g, " ")
+  .replace(/<[^>]*>/g, " ")
+  .replace(/[#>*_[\]()~-]/g, " ");
+const cjkCount = (plainBody.match(/[\u3400-\u9fff]/g) ?? []).length;
+const latinCount = plainBody
+  .replace(/[\u3400-\u9fff]/g, " ")
+  .split(/\s+/)
+  .filter(Boolean).length;
+const wordCount = cjkCount + latinCount;
+const readMinutes = Math.max(1, Math.ceil(wordCount / 450));
+const formattedDate = post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric" });
 ---
 
 <BaseLayout title={post.data.title} description={post.data.excerpt}>
@@ -26,16 +39,41 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
       <article class="post-article">
         <div class="post-meta">
           <span>{post.data.category}</span>
-          <span>{post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric" })}</span>
-          <span>{Math.max(3, Math.ceil(post.body.split(/\s+/).length / 180))} 分鐘</span>
+          <span>發表於 {formattedDate}</span>
+          <span>{wordCount.toLocaleString("zh-TW")} 字</span>
+          <span>約 {readMinutes} 分鐘</span>
         </div>
         <h1>{post.data.title}</h1>
+        <p class="post-lead">{post.data.excerpt}</p>
         <div class="post-content">
           <Content />
         </div>
       </article>
 
       <aside class="post-sidebar">
+        <div class="sidebar-card post-stats-card">
+          <p class="sidebar-title">文章資訊</p>
+          <dl class="post-stats">
+            <div>
+              <dt>分類</dt>
+              <dd>{post.data.category}</dd>
+            </div>
+            <div>
+              <dt>字數</dt>
+              <dd>{wordCount.toLocaleString("zh-TW")} 字</dd>
+            </div>
+            <div>
+              <dt>閱讀</dt>
+              <dd>約 {readMinutes} 分鐘</dd>
+            </div>
+          </dl>
+          <div class="tag-list sidebar-tags">
+            {post.data.tags.map((tag) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+        </div>
+
         {tocHeadings.length > 0 && (
           <nav class="sidebar-card toc-card" aria-label="文章目錄">
             <p class="sidebar-title">文章目錄</p>
