@@ -18,18 +18,6 @@ const index = allPosts.findIndex((entry) => entry.id === post.id);
 const previousPost = index > 0 ? allPosts[index - 1] : null;
 const nextPost = index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1] : null;
 const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
-const plainBody = post.body
-  .replace(/```[\s\S]*?```/g, " ")
-  .replace(/`[^`]+`/g, " ")
-  .replace(/<[^>]*>/g, " ")
-  .replace(/[#>*_[\]()~-]/g, " ");
-const cjkCount = (plainBody.match(/[\u3400-\u9fff]/g) ?? []).length;
-const latinCount = plainBody
-  .replace(/[\u3400-\u9fff]/g, " ")
-  .split(/\s+/)
-  .filter(Boolean).length;
-const wordCount = cjkCount + latinCount;
-const readMinutes = Math.max(1, Math.ceil(wordCount / 450));
 const formattedDate = post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric" });
 ---
 
@@ -40,8 +28,6 @@ const formattedDate = post.data.date.toLocaleDateString("zh-TW", { year: "numeri
         <div class="post-meta">
           <span>{post.data.category}</span>
           <span>發表於 {formattedDate}</span>
-          <span>{wordCount.toLocaleString("zh-TW")} 字</span>
-          <span>約 {readMinutes} 分鐘</span>
         </div>
         <h1>{post.data.title}</h1>
         <p class="post-lead">{post.data.excerpt}</p>
@@ -59,12 +45,8 @@ const formattedDate = post.data.date.toLocaleDateString("zh-TW", { year: "numeri
               <dd>{post.data.category}</dd>
             </div>
             <div>
-              <dt>字數</dt>
-              <dd>{wordCount.toLocaleString("zh-TW")} 字</dd>
-            </div>
-            <div>
-              <dt>閱讀</dt>
-              <dd>約 {readMinutes} 分鐘</dd>
+              <dt>日期</dt>
+              <dd>{formattedDate}</dd>
             </div>
           </dl>
           <div class="tag-list sidebar-tags">

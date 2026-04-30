@@ -4,30 +4,53 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import BlogCard from "../components/BlogCard.astro";
 import { site } from "../data/site";
 import { withBase } from "../utils/paths";
+import { isPublicTag } from "../utils/content";
 
 const posts = (await getCollection("blog")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const recentPosts = posts.slice(0, 3);
+const featuredPost = posts.find((post) => post.data.featured) ?? posts[0];
+const publicTags = [...new Set(posts.flatMap((post) => post.data.tags).filter(isPublicTag))].slice(0, 8);
+const categories = [...new Set(posts.map((post) => post.data.category))];
 ---
 
 <BaseLayout title="首頁" description={site.description}>
   <section class="home-hero section">
     <div class="container home-hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow">Ian Portal</p>
-        <h1>學習紀錄與生活剪輯</h1>
+        <p class="eyebrow">Ian Portal / Dev Notes</p>
+        <h1>把踩過的坑，整理成下次能走的路。</h1>
         <p class="hero-description">
-          留下一些自己容易遺忘的內容。
+          這裡收著 IaC、Observability、雲端與日常開發筆記。寫給未來的自己，也寫給正在摸索同一段路的人。
         </p>
         <div class="hero-actions">
-          <a class="button" href={withBase("/blog/")}>文章</a>
+          <a class="button" href={withBase("/blog/")}>閱讀文章</a>
+          <a class="button button-secondary" href={withBase("/projects/")}>查看專案</a>
         </div>
 
-        <div class="home-links">
-          <a href={withBase("/blog/")}>文章列表</a>
+        <div class="home-signal-grid" aria-label="網站統計">
+          <div>
+            <strong>{posts.length}</strong>
+            <span>篇文章</span>
+          </div>
+          <div>
+            <strong>{categories.length}</strong>
+            <span>個分類</span>
+          </div>
+          <div>
+            <strong>{publicTags.length}</strong>
+            <span>個標籤</span>
+          </div>
         </div>
       </div>
 
-      <div class="hero-photos" aria-label="首頁旅遊照片">
+      <div class="hero-photos home-hero-board" aria-label="首頁視覺看板">
+        {featuredPost && (
+          <a class="home-feature-note" href={withBase(`/blog/${featuredPost.id.replace(/\.md$/, "")}/`)}>
+            <span class="archive-label">Featured</span>
+            <strong>{featuredPost.data.title}</strong>
+            <span>{featuredPost.data.excerpt}</span>
+          </a>
+        )}
         <figure class="hero-photo hero-photo-large">
           <img src={withBase("/images/home-japan-1.jpg")} alt="Japan trip photo" loading="eager" />
         </figure>
@@ -39,19 +62,53 @@ const recentPosts = posts.slice(0, 3);
   </section>
 
   <section class="section section-tinted">
-    <div class="container">
-      <div class="home-intro">
-        <p>{site.tagline}</p>
+    <div class="container home-note-grid">
+      <aside class="home-side-panel">
+        <p class="archive-label">Now Writing</p>
+        <h2>最近在整理</h2>
+        <div class="home-topic-list">
+          <a href={withBase("/tags/iac/")}>IaC</a>
+          <a href={withBase("/tags/terraform/")}>Terraform</a>
+          <a href={withBase("/tags/ansible/")}>Ansible</a>
+          <a href={withBase("/tags/grafana/")}>Grafana</a>
+        </div>
+        <p>
+          從可以重複建立的 lab 開始，把部署、監控和紀錄慢慢串成自己的工程手冊。
+        </p>
+      </aside>
+
+      <div>
+        <div class="section-header home-section-header">
+          <div>
+            <p class="archive-label">Latest Notes</p>
+            <h2>最近文章</h2>
+          </div>
+          <a class="inline-link" href={withBase("/blog/")}>全部文章</a>
+        </div>
+        <div class="list-stack home-post-list">
+          {recentPosts.map((post) => (
+            <BlogCard
+              href={`/blog/${post.id.replace(/\.md$/, "")}/`}
+              title={post.data.title}
+              excerpt={post.data.excerpt}
+              date={post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "short", day: "numeric" })}
+              category={post.data.category}
+            />
+          ))}
+        </div>
       </div>
-      <div class="list-stack">
-        {recentPosts.map((post) => (
-          <BlogCard
-            href={`/blog/${post.id.replace(/\.md$/, "")}/`}
-            title={post.data.title}
-            excerpt={post.data.excerpt}
-            date={post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "short", day: "numeric" })}
-            category={post.data.category}
-          />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container home-tag-band">
+      <div>
+        <p class="archive-label">Index</p>
+        <h2>筆記索引</h2>
+      </div>
+      <div class="tag-list home-tag-list">
+        {publicTags.map((tag) => (
+          <span class="tag">{tag}</span>
         ))}
       </div>
     </div>
