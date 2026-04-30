@@ -2,8 +2,6 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import BlogCard from "../components/BlogCard.astro";
-import ProjectCard from "../components/ProjectCard.astro";
-import { projects } from "../data/projects";
 import { site } from "../data/site";
 import { withBase } from "../utils/paths";
 
@@ -22,13 +20,10 @@ const recentPosts = posts.slice(0, 3);
         </p>
         <div class="hero-actions">
           <a class="button" href={withBase("/blog/")}>文章</a>
-          <a class="button button-secondary" href={withBase("/tools/packing-list/")}>工具</a>
         </div>
 
         <div class="home-links">
-          <a href={withBase("/projects/")}>Packing List Generator</a>
           <a href={withBase("/blog/")}>文章列表</a>
-          <a href={withBase("/tags/demo/")}>Demo 標籤</a>
         </div>
       </div>
 
@@ -57,21 +52,6 @@ const recentPosts = posts.slice(0, 3);
             date={post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "short", day: "numeric" })}
             category={post.data.category}
           />
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <div>
-          <h2>工具</h2>
-        </div>
-      </div>
-      <div class="list-stack">
-        {projects.map((project) => (
-          <ProjectCard {...project} />
         ))}
       </div>
     </div>

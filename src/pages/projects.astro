@@ -6,16 +6,19 @@ import { projects } from "../data/projects";
 ---
 
 <BaseLayout title="工具" description="目前站上的工具列表。">
-  <PageHero title="工具" description="目前先放一個工具。" />
+  <PageHero title="工具" description="目前沒有公開工具。" />
 
   <section class="section">
     <div class="container">
-      <div class="list-stack">
-        {projects.map((project) => (
-          <ProjectCard {...project} />
-        ))}
-      </div>
+      {projects.length > 0 ? (
+        <div class="list-stack">
+          {projects.map((project) => (
+            <ProjectCard {...project} />
+          ))}
+        </div>
+      ) : (
+        <p class="search-empty">目前沒有公開工具。</p>
+      )}
     </div>
   </section>
 </BaseLayout>
-

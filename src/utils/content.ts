@@ -6,6 +6,12 @@ export function postUrl(id: string) {
   return `/blog/${postSlug(id)}/`;
 }
 
+const hiddenTagLabels = new Set(["demo", "test", "測試"]);
+
+export function isPublicTag(tag: string) {
+  return !hiddenTagLabels.has(tag.normalize("NFKC").trim().toLowerCase());
+}
+
 export function termSlug(value: string) {
   return Array.from(value.normalize("NFKC").trim().toLowerCase())
     .map((char) => {

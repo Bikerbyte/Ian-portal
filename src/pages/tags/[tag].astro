@@ -3,15 +3,17 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import BlogCard from "../../components/BlogCard.astro";
 import PageHero from "../../components/PageHero.astro";
-import { termSlug } from "../../utils/content";
+import { isPublicTag, termSlug } from "../../utils/content";
 import { withBase } from "../../utils/paths";
 
 const posts = await getCollection("blog");
-const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort((a, b) => a.localeCompare(b));
+const tags = [...new Set(posts.flatMap((post) => post.data.tags))]
+  .filter(isPublicTag)
+  .sort((a, b) => a.localeCompare(b));
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
-  const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
+  const tags = [...new Set(posts.flatMap((post) => post.data.tags))].filter(isPublicTag);
 
   return tags.map((tag) => ({
     params: { tag: termSlug(tag) },
