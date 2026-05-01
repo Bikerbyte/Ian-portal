@@ -17,6 +17,11 @@ const basePath = import.meta.env.BASE_URL.replace(/\/+$/, "");
 const pathname = Astro.url.pathname.replace(basePath, "") || "/";
 const canonicalUrl = absoluteUrl(pathname);
 const socialImage = image ? absoluteUrl(image) : null;
+const navIcons: Record<string, string> = {
+  "/": `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10.5 9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>`,
+  "/blog/": `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="M14 3v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/></svg>`,
+  "/about/": `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg>`
+};
 const footerLinks: { href: string; label: string }[] = [
   { href: site.githubUrl, label: "GitHub" },
   site.contactText ? { href: site.contactText, label: "聯絡" } : null
@@ -49,6 +54,13 @@ const footerLinks: { href: string; label: string }[] = [
       href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
+    <script is:inline>
+      (() => {
+        const savedTheme = localStorage.getItem("theme");
+        const theme = savedTheme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
   </head>
   <body>
     <div class="site-shell">
@@ -61,9 +73,21 @@ const footerLinks: { href: string; label: string }[] = [
 
           <nav aria-label="Main navigation" class="main-nav">
             {navItems.map((item) => (
-              <a class:list={[pathname === item.href && "is-active"]} href={withBase(item.href)}>{item.label}</a>
+              <a class:list={[pathname === item.href && "is-active"]} href={withBase(item.href)}>
+                <span class="nav-icon" set:html={navIcons[item.href] ?? navIcons["/"]} />
+                <span>{item.label}</span>
+              </a>
             ))}
           </nav>
+
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle dark mode" aria-pressed="false">
+            <span class="theme-icon theme-icon-sun" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 4V2"/><path d="M12 22v-2"/><path d="m4.93 4.93-1.41-1.41"/><path d="m20.48 20.48-1.41-1.41"/><path d="M4 12H2"/><path d="M22 12h-2"/><path d="m4.93 19.07-1.41 1.41"/><path d="m20.48 3.52-1.41 1.41"/><circle cx="12" cy="12" r="4"/></svg>
+            </span>
+            <span class="theme-icon theme-icon-moon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 7 7 0 1 0 20.5 14.5Z"/></svg>
+            </span>
+          </button>
         </div>
       </header>
 
@@ -104,6 +128,24 @@ const footerLinks: { href: string; label: string }[] = [
   updateReadingProgress();
   window.addEventListener("scroll", updateReadingProgress, { passive: true });
   window.addEventListener("resize", updateReadingProgress);
+
+  const themeToggle = document.querySelector("[data-theme-toggle]");
+
+  function applyTheme(theme: string | undefined) {
+    const nextTheme = theme === "dark" ? "dark" : "light";
+    document.documentElement.dataset.theme = nextTheme;
+    localStorage.setItem("theme", nextTheme);
+
+    if (themeToggle instanceof HTMLButtonElement) {
+      themeToggle.setAttribute("aria-pressed", String(nextTheme === "dark"));
+    }
+  }
+
+  applyTheme(document.documentElement.dataset.theme);
+
+  themeToggle?.addEventListener("click", () => {
+    applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+  });
 
   document.querySelectorAll(".post-content pre").forEach((block) => {
     if (!(block instanceof HTMLElement)) {

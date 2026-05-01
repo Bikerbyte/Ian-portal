@@ -9,7 +9,6 @@ import { isPublicTag, termSlug } from "../utils/content";
 const posts = (await getCollection("blog")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const recentPosts = posts.slice(0, 3);
 const publicTags = [...new Set(posts.flatMap((post) => post.data.tags).filter(isPublicTag))].slice(0, 8);
-const categories = [...new Set(posts.map((post) => post.data.category))];
 ---
 
 <BaseLayout title="首頁" description={site.description}>
@@ -25,28 +24,13 @@ const categories = [...new Set(posts.map((post) => post.data.category))];
           <a class="button" href={withBase("/blog/")}>閱讀文章</a>
           <a class="button button-secondary" href={withBase("/projects/")}>查看專案</a>
         </div>
-
-        <div class="home-signal-grid" aria-label="網站統計">
-          <div>
-            <strong>{posts.length}</strong>
-            <span>篇文章</span>
-          </div>
-          <div>
-            <strong>{categories.length}</strong>
-            <span>個分類</span>
-          </div>
-          <div>
-            <strong>{publicTags.length}</strong>
-            <span>個標籤</span>
-          </div>
-        </div>
       </div>
 
-      <div class="hero-photos home-hero-board" aria-label="首頁視覺看板">
-        <figure class="hero-photo hero-photo-large">
+      <div class="hero-slideshow" aria-label="首頁照片輪播">
+        <figure class="hero-slide">
           <img src={withBase("/images/home-japan-1.jpg")} alt="Japan trip photo" loading="eager" />
         </figure>
-        <figure class="hero-photo hero-photo-small">
+        <figure class="hero-slide">
           <img src={withBase("/images/home-japan-2.jpg")} alt="Japan trip photo" loading="eager" />
         </figure>
       </div>
