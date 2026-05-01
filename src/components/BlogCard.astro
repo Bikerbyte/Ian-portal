@@ -1,5 +1,6 @@
 ---
 import { withBase } from "../utils/paths";
+import { isPublicTag, termSlug } from "../utils/content";
 
 type Props = {
   href: string;
@@ -7,16 +8,31 @@ type Props = {
   excerpt: string;
   date: string;
   category: string;
+  tags?: string[];
+  cover?: string;
 };
 
-const { href, title, excerpt, date, category } = Astro.props;
+const { href, title, excerpt, date, category, tags = [], cover } = Astro.props;
+const publicTags = tags.filter(isPublicTag).slice(0, 5);
 ---
 
-<article class="post-preview" data-post-card data-category={category.toLowerCase()} data-search={`${title} ${excerpt} ${category}`.toLowerCase()}>
+<article class="post-preview" data-post-card data-category={category.toLowerCase()} data-search={`${title} ${excerpt} ${category} ${tags.join(" ")}`.toLowerCase()}>
+  {cover && (
+    <a class="post-preview-media" href={withBase(href)} aria-label={title}>
+      <img src={withBase(cover)} alt="" loading="lazy" />
+    </a>
+  )}
   <div class="card-meta">
-    <span>{category}</span>
+    <a href={withBase(`/categories/${termSlug(category)}/`)}>{category}</a>
     <span>{date}</span>
   </div>
   <h3><a href={withBase(href)}>{title}</a></h3>
   <p>{excerpt}</p>
+  {publicTags.length > 0 && (
+    <div class="tag-list post-preview-tags">
+      {publicTags.map((tag) => (
+        <a class="tag" href={withBase(`/tags/${termSlug(tag)}/`)}>{tag}</a>
+      ))}
+    </div>
+  )}
 </article>

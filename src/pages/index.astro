@@ -85,6 +85,8 @@ const categories = [...new Set(posts.map((post) => post.data.category))];
               excerpt={post.data.excerpt}
               date={post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "short", day: "numeric" })}
               category={post.data.category}
+              tags={post.data.tags}
+              cover={post.data.cover}
             />
           ))}
         </div>

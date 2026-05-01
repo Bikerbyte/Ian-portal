@@ -8,6 +8,9 @@
   --accent: #b45d3f;
   --accent-soft: #fbefe8;
   --accent-alt: #4c7b74;
+  --ink: #27384a;
+  --paper: #fffaf2;
+  --wash: #edf4f2;
   --container: 1120px;
   --content: 820px;
 }
@@ -122,7 +125,24 @@ h4 {
 }
 
 .page-hero {
+  position: relative;
+  overflow: hidden;
   padding: 4.5rem 0 2.4rem;
+  border-bottom: 1px solid var(--line);
+  background:
+    linear-gradient(135deg, rgba(76, 123, 116, 0.12), transparent 42%),
+    linear-gradient(90deg, rgba(180, 93, 63, 0.08), transparent 55%),
+    rgba(255, 255, 255, 0.32);
+}
+
+.page-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 6px;
+  background:
+    linear-gradient(90deg, var(--accent), var(--accent-alt) 48%, var(--ink));
+  opacity: 0.82;
 }
 
 .home-hero {
@@ -154,6 +174,7 @@ h4 {
 }
 
 .hero-panel {
+  position: relative;
   text-align: center;
 }
 
@@ -299,7 +320,9 @@ button.button:hover,
 }
 
 .section-tinted {
-  background: rgba(255, 255, 255, 0.68);
+  background:
+    linear-gradient(90deg, rgba(255, 250, 242, 0.92), rgba(237, 244, 242, 0.72)),
+    #fff;
 }
 
 .section-header {
@@ -392,7 +415,9 @@ button.button:hover,
   position: sticky;
   top: 1.5rem;
   padding: 1rem 0 1rem 1rem;
-  border-left: 1px solid var(--line-strong);
+  border-left: 4px solid var(--accent-alt);
+  background:
+    linear-gradient(90deg, rgba(76, 123, 116, 0.08), transparent 72%);
 }
 
 .home-side-panel h2 {
@@ -441,6 +466,9 @@ button.button:hover,
   grid-template-columns: 220px minmax(0, 1fr);
   gap: 2rem;
   align-items: start;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line);
 }
 
 .home-tag-list {
@@ -451,6 +479,32 @@ button.button:hover,
 .project-line {
   padding: 1.55rem 0;
   border-top: 1px solid var(--line);
+}
+
+.post-preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.55rem;
+}
+
+.post-preview-media {
+  overflow: hidden;
+  width: 100%;
+  margin-bottom: 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.post-preview-media img {
+  width: 100%;
+  aspect-ratio: 16 / 8;
+  object-fit: cover;
+  transition: transform 220ms ease;
+}
+
+.post-preview-media:hover img {
+  transform: scale(1.025);
 }
 
 .post-preview:first-child,
@@ -465,6 +519,11 @@ button.button:hover,
   gap: 0.75rem;
   color: var(--muted);
   font-size: 0.92rem;
+}
+
+.card-meta a:hover,
+.post-meta a:hover {
+  color: var(--accent);
 }
 
 .post-preview p,
@@ -484,6 +543,10 @@ button.button:hover,
 .post-preview h3,
 .project-line h3 {
   margin-bottom: 0.45rem;
+}
+
+.post-preview-tags {
+  margin-top: 0.35rem;
 }
 
 .tag-list,
@@ -633,6 +696,27 @@ button.button:hover,
   color: #d9e7f4;
   line-height: 1.65;
   box-shadow: 0 14px 30px rgba(45, 38, 34, 0.11);
+}
+
+.copy-code-button {
+  position: absolute;
+  top: 0.42rem;
+  right: 0.55rem;
+  z-index: 1;
+  min-height: 1.45rem;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #d9e7f4;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.copy-code-button:hover {
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .post-content pre::before {
@@ -817,6 +901,48 @@ button.button:hover,
   border-left: 1px solid var(--line-strong);
   color: var(--muted);
   font-size: 0.95rem;
+}
+
+.series-links {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.series-links a {
+  display: grid;
+  grid-template-columns: 1.65rem minmax(0, 1fr);
+  gap: 0.55rem;
+  align-items: start;
+}
+
+.series-links span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.series-links a.is-current {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  width: 100%;
+  height: 3px;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--accent), var(--accent-alt), var(--ink));
 }
 
 .post-sidebar {
@@ -1034,5 +1160,11 @@ button.button:hover,
   .post-content th:first-child,
   .post-content td:first-child {
     min-width: 7.5rem;
+  }
+
+  .copy-code-button {
+    position: static;
+    float: right;
+    margin: -2.15rem 0 0.6rem;
   }
 }

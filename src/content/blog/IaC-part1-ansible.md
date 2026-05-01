@@ -6,6 +6,8 @@ category: "學習"
 tags:
   - IaC
   - Ansible
+series: "IaC Lab"
+seriesOrder: 1
 featured: false
 ---
 

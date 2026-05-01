@@ -2,6 +2,7 @@
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { withBase } from "../../utils/paths";
+import { isPublicTag, postUrl, termSlug } from "../../utils/content";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -19,14 +20,21 @@ const previousPost = index > 0 ? allPosts[index - 1] : null;
 const nextPost = index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1] : null;
 const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
 const formattedDate = post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric" });
+const publicTags = post.data.tags.filter(isPublicTag);
+const seriesPosts = post.data.series
+  ? allPosts
+      .filter((entry) => entry.data.series === post.data.series)
+      .sort((a, b) => (a.data.seriesOrder ?? 999) - (b.data.seriesOrder ?? 999) || a.data.date.getTime() - b.data.date.getTime())
+  : [];
 ---
 
 <BaseLayout title={post.data.title} description={post.data.excerpt} image={post.data.cover}>
+  <div class="reading-progress" data-reading-progress aria-hidden="true"></div>
   <section class="section post-section">
     <div class="container post-layout">
       <article class="post-article">
         <div class="post-meta">
-          <span>{post.data.category}</span>
+          <a href={withBase(`/categories/${termSlug(post.data.category)}/`)}>{post.data.category}</a>
           <span>發表於 {formattedDate}</span>
         </div>
         <h1>{post.data.title}</h1>
@@ -42,7 +50,7 @@ const formattedDate = post.data.date.toLocaleDateString("zh-TW", { year: "numeri
           <dl class="post-stats">
             <div>
               <dt>分類</dt>
-              <dd>{post.data.category}</dd>
+              <dd><a href={withBase(`/categories/${termSlug(post.data.category)}/`)}>{post.data.category}</a></dd>
             </div>
             <div>
               <dt>日期</dt>
@@ -50,11 +58,25 @@ const formattedDate = post.data.date.toLocaleDateString("zh-TW", { year: "numeri
             </div>
           </dl>
           <div class="tag-list sidebar-tags">
-            {post.data.tags.map((tag) => (
-              <span class="tag">{tag}</span>
+            {publicTags.map((tag) => (
+              <a class="tag" href={withBase(`/tags/${termSlug(tag)}/`)}>{tag}</a>
             ))}
           </div>
         </div>
+
+        {seriesPosts.length > 1 && (
+          <nav class="sidebar-card series-card" aria-label="系列文章">
+            <p class="sidebar-title">{post.data.series}</p>
+            <div class="series-links">
+              {seriesPosts.map((entry) => (
+                <a class:list={[entry.id === post.id && "is-current"]} href={withBase(postUrl(entry.id))}>
+                  <span>{entry.data.seriesOrder ?? seriesPosts.indexOf(entry) + 1}</span>
+                  {entry.data.title}
+                </a>
+              ))}
+            </div>
+          </nav>
+        )}
 
         {tocHeadings.length > 0 && (
           <nav class="sidebar-card toc-card" aria-label="文章目錄">
@@ -70,8 +92,8 @@ const formattedDate = post.data.date.toLocaleDateString("zh-TW", { year: "numeri
         )}
 
         <div class="sidebar-card">
-          {previousPost && <a href={withBase(`/blog/${previousPost.id.replace(/\.md$/, "")}/`)}>上一篇：{previousPost.data.title}</a>}
-          {nextPost && <a href={withBase(`/blog/${nextPost.id.replace(/\.md$/, "")}/`)}>下一篇：{nextPost.data.title}</a>}
+          {previousPost && <a href={withBase(postUrl(previousPost.id))}>上一篇：{previousPost.data.title}</a>}
+          {nextPost && <a href={withBase(postUrl(nextPost.id))}>下一篇：{nextPost.data.title}</a>}
           <a href={withBase("/blog/")}>回文章列表</a>
         </div>
       </aside>

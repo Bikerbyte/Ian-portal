@@ -9,6 +9,8 @@ tags:
   - Ansible
   - Docker
   - Monitoring
+series: "IaC Lab"
+seriesOrder: 3
 featured: true
 ---
 

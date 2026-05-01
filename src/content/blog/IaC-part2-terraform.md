@@ -6,6 +6,8 @@ category: "學習"
 tags:
   - IaC
   - Terraform
+series: "IaC Lab"
+seriesOrder: 2
 featured: false
 ---
 
