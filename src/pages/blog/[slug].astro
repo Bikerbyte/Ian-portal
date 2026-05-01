@@ -21,7 +21,7 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
 const formattedDate = post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric" });
 ---
 
-<BaseLayout title={post.data.title} description={post.data.excerpt}>
+<BaseLayout title={post.data.title} description={post.data.excerpt} image={post.data.cover}>
   <section class="section post-section">
     <div class="container post-layout">
       <article class="post-article">

@@ -8,6 +8,7 @@ const blog = defineCollection({
     date: z.coerce.date(),
     category: z.string(),
     tags: z.array(z.string()),
+    cover: z.string().optional(),
     featured: z.boolean().default(false)
   })
 });
@@ -15,4 +16,3 @@ const blog = defineCollection({
 export const collections = {
   blog
 };
-

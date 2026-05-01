@@ -54,6 +54,7 @@ a {
 img {
   display: block;
   max-width: 100%;
+  height: auto;
 }
 
 .container {
@@ -499,6 +500,10 @@ button.button:hover,
   font-size: 0.92rem;
 }
 
+.tag:hover {
+  color: var(--accent);
+}
+
 .tag::before {
   content: "#";
 }
@@ -674,6 +679,31 @@ button.button:hover,
 
 .post-content blockquote p:last-child {
   margin-bottom: 0;
+}
+
+.post-content img {
+  width: 100%;
+  margin: 1.45rem 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 14px 30px rgba(45, 38, 34, 0.1);
+}
+
+.post-content figure {
+  margin: 1.55rem 0;
+}
+
+.post-content figure img {
+  margin: 0;
+}
+
+.post-content figcaption {
+  margin-top: 0.55rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  text-align: center;
 }
 
 .post-content .callout {
