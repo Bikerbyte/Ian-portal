@@ -523,20 +523,6 @@ button.button:hover {
     linear-gradient(90deg, rgba(0, 0, 0, 0.12), transparent 38%);
 }
 
-.hero-slideshow::after {
-  content: "";
-  position: absolute;
-  right: 1.15rem;
-  bottom: 1.15rem;
-  z-index: 2;
-  width: 4.9rem;
-  height: 0.42rem;
-  border-radius: 999px;
-  background:
-    linear-gradient(90deg, var(--accent) 0 46%, rgba(255, 255, 255, 0.62) 46% 54%, var(--accent-alt) 54% 100%);
-  box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.12);
-}
-
 .hero-slide {
   position: absolute;
   inset: 0;
