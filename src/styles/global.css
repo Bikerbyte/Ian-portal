@@ -17,6 +17,8 @@
   --surface-strong: #fff;
   --surface-soft: rgba(255, 250, 242, 0.94);
   --header-bg: rgba(255, 253, 249, 0.88);
+  --lead-bg: linear-gradient(90deg, rgba(251, 239, 232, 0.78), rgba(255, 250, 242, 0.22) 72%, transparent);
+  --lead-text: #5f5148;
   --hero-bg:
     linear-gradient(132deg, rgba(39, 56, 74, 0.08), transparent 38%),
     linear-gradient(90deg, rgba(255, 250, 242, 0.95), rgba(237, 244, 242, 0.7));
@@ -47,6 +49,8 @@
   --surface-strong: #171b1d;
   --surface-soft: rgba(23, 27, 29, 0.92);
   --header-bg: rgba(16, 19, 21, 0.86);
+  --lead-bg: linear-gradient(90deg, rgba(226, 138, 100, 0.28), rgba(23, 27, 29, 0.92) 66%, rgba(23, 27, 29, 0.28));
+  --lead-text: #efe5dd;
   --hero-bg:
     linear-gradient(132deg, rgba(120, 183, 170, 0.15), transparent 42%),
     linear-gradient(90deg, rgba(16, 19, 21, 0.96), rgba(31, 39, 38, 0.86));
@@ -853,7 +857,9 @@ button.button:hover {
 .post-lead {
   padding: 1rem 0 1rem 1rem;
   border-left: 4px solid var(--accent);
-  background: linear-gradient(90deg, rgba(251, 239, 232, 0.72), transparent);
+  background: var(--lead-bg);
+  color: var(--lead-text);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
 }
 
 .post-content {
