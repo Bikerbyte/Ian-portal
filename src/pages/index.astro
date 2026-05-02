@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import { readdirSync } from "node:fs";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import BlogCard from "../components/BlogCard.astro";
 import { site } from "../data/site";
@@ -9,6 +10,20 @@ import { isPublicTag, termSlug } from "../utils/content";
 const posts = (await getCollection("blog")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const recentPosts = posts.slice(0, 3);
 const publicTags = [...new Set(posts.flatMap((post) => post.data.tags).filter(isPublicTag))].slice(0, 8);
+type HeroImage = {
+  src: string;
+  alt: string;
+};
+const heroImages: HeroImage[] = readdirSync(new URL("../../public/images/", import.meta.url))
+  .filter((fileName) => /^home-[\w-]+\.(?:avif|webp|png|jpe?g)$/i.test(fileName))
+  .sort((a, b) => a.localeCompare(b, "en", { numeric: true }))
+  .map((fileName) => ({
+    src: `/images/${fileName}`,
+    alt: fileName
+      .replace(/\.[^.]+$/, "")
+      .replace(/^home-/, "")
+      .replace(/[-_]+/g, " ")
+  }));
 ---
 
 <BaseLayout title="首頁" description={site.description}>
@@ -27,12 +42,11 @@ const publicTags = [...new Set(posts.flatMap((post) => post.data.tags).filter(is
       </div>
 
       <div class="hero-slideshow" aria-label="首頁照片輪播">
-        <figure class="hero-slide">
-          <img src={withBase("/images/home-japan-1.jpg")} alt="Japan trip photo" loading="eager" />
-        </figure>
-        <figure class="hero-slide">
-          <img src={withBase("/images/home-japan-2.jpg")} alt="Japan trip photo" loading="eager" />
-        </figure>
+        {heroImages.map((image, index) => (
+          <figure class:list={["hero-slide", index === 0 && "is-active"]}>
+            <img src={withBase(image.src)} alt={image.alt} loading={index === 0 ? "eager" : "lazy"} />
+          </figure>
+        ))}
       </div>
     </div>
   </section>
@@ -92,3 +106,16 @@ const publicTags = [...new Set(posts.flatMap((post) => post.data.tags).filter(is
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  const heroSlides = Array.from(document.querySelectorAll(".hero-slideshow .hero-slide"));
+  let activeHeroSlide = 0;
+
+  if (heroSlides.length > 1) {
+    window.setInterval(() => {
+      heroSlides[activeHeroSlide]?.classList.remove("is-active");
+      activeHeroSlide = (activeHeroSlide + 1) % heroSlides.length;
+      heroSlides[activeHeroSlide]?.classList.add("is-active");
+    }, 5000);
+  }
+</script>
