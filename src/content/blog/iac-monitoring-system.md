@@ -1,6 +1,6 @@
 ---
 title: "IaC Monitoring System 實作紀錄"
-excerpt: "使用 Terraform 建立 Docker app 環境，並輸出 Ansible inventory 與 group variables，作為後續監控系統自動化部署的基礎。"
+excerpt: "以 Terraform、Ansible、Python agent、Prometheus 與 Grafana 組成一套可重複部署的 monitoring lab，並用 Docker Target Mode 與 Server Agent Mode 練習 IaC 工作流。"
 date: 2026-04-30
 category: "學習"
 tags:
@@ -17,153 +17,416 @@ featured: true
 ## Agenda
 
 - 專案目標
-- 實作環境
-- Terraform 管理的資源
-- Terraform State 檢查
-- Terraform 與 Ansible 的銜接
-- 目前進度與下一步
+- 整體架構
+- Repository 結構
+- Docker Target Mode
+- Server Agent Mode
+- Python Monitoring Agent
+- Grafana 與 Prometheus
+- 驗證與品質檢查
+- 目前心得與後續方向
 
 ## 專案目標
 
-這次實作的專案是 [iac-monitoring-system](https://github.com/Bikerbyte/iac-monitoring-system)，目標是用 Infrastructure as Code 的方式建立一套本機可重複部署的 app 與 monitoring lab。
+這次實作的專案是 [iac-monitoring-system](https://github.com/Bikerbyte/iac-monitoring-system)。它不是單純把 Prometheus 和 Grafana 跑起來，而是把「監控系統如何被建立、派送、更新、驗證」都放進 Infrastructure as Code 的流程裡。
 
-目前的重點不是一次把監控系統全部完成，而是先把基礎流程打通：
+這個專案目前有兩條主要路線：
 
-- 用 Terraform 建立 Docker network。
-- 用 Terraform build app container image。
-- 用 Terraform 啟動多個 app container。
-- 用 Terraform 產生 Ansible 需要的 inventory 與 group variables。
-- 後續再用 Ansible 部署 monitoring stack，例如 Prometheus、Grafana 或相關 exporter。
+| 模式 | 目的 | 適合情境 |
+|------|------|----------|
+| Docker Target Mode | 用本機 Docker containers 模擬 app targets，快速展示新增、刪除、編輯與監控設定派送 | Demo、練習 Terraform/Ansible 串接 |
+| Server Agent Mode | 針對既有 Linux servers 或 AWS EC2 部署 Python monitoring agent，再由 Prometheus/Grafana 收集與展示 | 接近真實主機監控的練習 |
 
-也就是說，Terraform 負責「把基礎設施生出來」，Ansible 負責「進一步設定與部署服務」。
+我想練的核心不是「手動把監控服務裝好」，而是把每個步驟變成可以重複執行、可以版本控管、可以清楚驗證的流程：
 
-## 實作環境
+- Terraform 管理目標資源與 desired state。
+- Terraform 產生 Ansible inventory 和 group variables。
+- Ansible 依照 Terraform output 部署 monitoring stack 或 agent。
+- Prometheus scrape targets。
+- Grafana 自動載入 datasource 和 dashboards。
+- Makefile 統一常用操作與驗證入口。
 
-目前是在 Ubuntu 上進行實作，主要工具包含：
+也就是說，Terraform 負責描述「有哪些東西」，Ansible 負責把「該部署的服務與設定」派送出去，Prometheus/Grafana 負責觀察結果。
 
-- Ubuntu 作為操作環境。
-- Docker 作為本機 container runtime。
-- Terraform 管理 Docker resource 與本機產出的設定檔。
-- Ansible 讀取 Terraform 產生的 inventory 與變數檔。
+## 整體架構
 
-這樣的組合很適合拿來練習 IaC 流程，因為不用先準備雲端帳號，也能模擬多服務、多節點與監控部署的情境。
+專案 README 裡把架構整理成這個方向：
 
-> [!NOTE]
-> 目前這個 lab 先以本機 Docker 為主，重點是把 Terraform 到 Ansible 的交接流程做穩。等流程成熟後，再把同樣概念搬到雲端 VM 或 Kubernetes 會比較順。
-
-## Terraform 管理的資源
-
-目前執行 `terraform state list` 可以看到 Terraform 已經管理以下資源：
-
-```bash
-terraform state list
-docker_container.app_node[0]
-docker_container.app_node[1]
-docker_image.app
-docker_network.lab
-local_file.ansible_group_vars
-local_file.ansible_inventory
+```text
+Terraform -> Ansible -> Python Agent -> /var/log/monitor-agent.log
+                       -> /metrics -> Prometheus -> Grafana Dashboard
 ```
 
-這代表目前 Terraform state 中有 6 個資源，分別涵蓋 Docker app、共用網路，以及給 Ansible 使用的設定檔。
+實際上會依模式分成兩種流程。
+
+Docker Target Mode 的流程比較適合本機 demo：
+
+```text
+Terraform
+  -> 建立 Docker network
+  -> 建立多個 HTTP app containers
+  -> 產生 ansible/docker-target-inventory.ini
+  -> 產生 ansible/group_vars/docker_target_stack/generated.yml
+
+Ansible
+  -> 部署 blackbox exporter
+  -> 部署 Prometheus
+  -> 部署 Grafana dashboards
+
+Grafana
+  -> 顯示 app up/down、latency、HTTP status code
+```
+
+Server Agent Mode 則比較接近真實主機監控：
+
+```text
+Terraform
+  -> 使用既有 Linux server inventory
+  -> 或選擇建立 AWS EC2
+  -> 產生 ansible/inventory.ini
+
+Ansible
+  -> 將 Python monitoring agent 部署到遠端 servers
+  -> 建立 systemd service
+  -> 在 control node 部署 Prometheus/Grafana
+
+Python agent
+  -> 收集 CPU、memory、zombie process、DNS/TCP check
+  -> 寫入 /var/log/monitor-agent.log
+  -> 暴露 /metrics 給 Prometheus
+```
+
+這樣拆開之後，Docker 模式可以快速展示 IaC 的變更流程，Server Agent 模式可以練習更接近實務的遠端主機部署。
+
+## Repository 結構
+
+目前 repo 的主要結構如下：
+
+```text
+infra/
+  docker/
+    terraform/
+      main.tf
+      variables.tf
+      outputs.tf
+  server/
+    terraform/
+      main.tf
+      variables.tf
+      outputs.tf
+ansible/
+  docker-target.yml
+  server-agent.yml
+  templates/
+  files/
+agent/
+  agent.py
+  config.yml
+systemd/
+  monitor-agent.service
+docs/
+  system-usage.zh-TW.md
+Makefile
+requirements.txt
+README.md
+```
+
+其中比較重要的分工是：
+
+| 目錄或檔案 | 負責內容 |
+|------------|----------|
+| `infra/docker/terraform` | 建立本機 Docker app nodes、network，並產生 Docker 模式的 Ansible 設定 |
+| `infra/server/terraform` | 管理 Linux server inventory，或在開啟選項後建立 AWS EC2 |
+| `ansible/docker-target.yml` | 部署 Docker 模式的 blackbox exporter、Prometheus、Grafana |
+| `ansible/server-agent.yml` | 部署遠端 Python agent 與本機 monitoring stack |
+| `agent/agent.py` | 自製 monitoring agent |
+| `systemd/monitor-agent.service` | 讓 agent 用 systemd 常駐與自動重啟 |
+| `Makefile` | 包裝常用 demo、scale、edit、validate 指令 |
+
+## Docker Target Mode
+
+Docker Target Mode 是目前最適合拿來 demo 的路徑，因為不用先準備真的 server，也不用打開雲端資源。Terraform 會在本機建立多個 HTTP echo containers，用它們模擬被監控的 app nodes。
+
+Terraform 的 Docker 模式主要管理這些資源：
 
 | Resource | 說明 |
 |----------|------|
-| `docker_container.app_node[0]` | 第一個 app container 節點 |
-| `docker_container.app_node[1]` | 第二個 app container 節點 |
-| `docker_image.app` | app container 使用的 image |
-| `docker_network.lab` | app 與 monitoring stack 共用的 Docker network |
-| `local_file.ansible_inventory` | 產生給 Ansible 使用的主機清單 |
-| `local_file.ansible_group_vars` | 產生給 Ansible 使用的 Terraform output 變數 |
+| `docker_network.lab` | app containers 和 monitoring stack 共用的 Docker network |
+| `docker_image.app` | 預設使用 `hashicorp/http-echo:1.0` |
+| `docker_container.app_node` | 依 `node_count` 建立 1 到 5 個 app containers |
+| `local_file.ansible_inventory` | 產生 `ansible/docker-target-inventory.ini` |
+| `local_file.ansible_group_vars` | 產生 `ansible/group_vars/docker_target_stack/generated.yml` |
 
-## Docker Image 與 App Containers
+預設 app node 會從 `18080` 開始映射 host port：
 
-`docker_image.app` 是 app container 會使用的 image。這個資源讓 image build 納入 Terraform 管理，後續只要 app image 設定或 build context 有變動，就可以透過 Terraform 流程重新建立。
-
-目前也已經建立兩個 app node：
-
-```bash
-docker_container.app_node[0]
-docker_container.app_node[1]
+```text
+App node 1: http://localhost:18080
+App node 2: http://localhost:18081
 ```
 
-這種寫法通常代表 Terraform 設定裡使用了 `count` 或類似方式來建立多個相同角色的 container。對監控練習來說，這很有幫助，因為可以模擬多個 app target，讓 Prometheus 之類的監控服務後續能 scrape 多個節點。
+Prometheus、Grafana 和 blackbox exporter 則由 Ansible 部署：
 
-## Docker Network
+```text
+Grafana:    http://localhost:13000
+Prometheus: http://localhost:19090
+Blackbox:   http://localhost:19115
+```
 
-`docker_network.lab` 是 app 與 monitoring stack 共用的網路。
+快速啟動可以用 Makefile：
 
-把 app container 和 monitoring stack 放在同一個 Docker network 裡，後續會比較容易讓監控服務透過 container name 或固定的 service name 找到 target。這也可以避免每次 container IP 改變時，都要手動修改監控設定。
+```bash
+make docker-up
+```
 
-這個 network 在整個 lab 裡扮演基礎層角色：
+它背後做的事相當於：
 
-- app containers 會連到這個 network。
-- monitoring stack 後續也會連到這個 network。
-- Prometheus 可以透過 network 內部名稱連到 app target。
-- Grafana 可以連到 Prometheus 讀取 metrics。
+```bash
+terraform -chdir=infra/docker/terraform init
+terraform -chdir=infra/docker/terraform apply
+ansible-playbook -i ansible/docker-target-inventory.ini ansible/docker-target.yml
+```
 
-## Terraform State 檢查
+### 模擬新增資源
 
-`terraform state list` 是確認目前 Terraform 管理範圍的好方法。
+把 app nodes 從預設數量調整成 3：
 
-目前看到的 state 結果表示 Terraform 已經成功追蹤：
+```bash
+make docker-scale NODE_COUNT=3
+```
 
-- Docker image。
-- Docker network。
-- 兩個 app containers。
-- 兩個 Ansible 相關 local files。
+這個流程會重新執行 Terraform，更新 app containers 和 Ansible 需要的 target 清單，再重新派送 Prometheus/Grafana 設定。這是我覺得這個 lab 最有價值的地方：target 數量不是手動去 Prometheus 裡改，而是從 Terraform desired state 往後一路更新。
 
-這一步很重要，因為 Terraform 後續執行 `plan` 或 `apply` 時，就是根據 state、實際環境與 `.tf` 設定檔去比較差異。
+### 模擬刪除資源
 
-如果 state 裡已經有資源，但 Docker 實際環境被手動改掉，下一次 `terraform plan` 就可能看到 drift。這也是 IaC 實作中需要避免手動改環境的原因：盡量讓環境變更都回到程式碼與 Terraform 流程裡。
+把 app nodes 縮回 1：
+
+```bash
+make docker-scale NODE_COUNT=1
+```
+
+這可以展示 Terraform 如何把環境拉回宣告的狀態，也可以看 Grafana dashboard 裡的 target 數量跟著變少。
+
+### 模擬編輯資源
+
+修改 app container 回應文字：
+
+```bash
+make docker-edit
+```
+
+這個 target 會用 Terraform 變數更新 `app_message_prefix`，適合展示「設定變更」如何透過 IaC 進行，而不是手動進 container 裡改。
+
+### 模擬故障與恢復
+
+也可以故意停掉其中一個 container：
+
+```bash
+docker stop iac-lab-app-node-01
+```
+
+幾秒後 Grafana 的 Docker Target dashboard 應該會看到 target down。恢復時再回到 Terraform：
+
+```bash
+cd infra/docker/terraform
+terraform apply
+```
+
+這可以練習 drift 的概念：當實際環境被手動改掉，下一次 Terraform apply 會把它拉回 desired state。
+
+## Server Agent Mode
+
+Server Agent Mode 比較接近真實環境。它的 Terraform 目錄在：
+
+```text
+infra/server/terraform
+```
+
+這個模式預設不會建立 AWS 資源，而是用 `server_hosts` 產生 Ansible inventory。也就是說，預設是安全的 mock/existing server flow，可以先拿既有 Linux servers 或 VMware 主機練習，不會一執行就產生雲端費用。
+
+如果要改成真的建立 AWS EC2，可以把：
+
+```hcl
+enable_aws_resources = true
+```
+
+並補上 AMI ID、SSH key、VPC/subnet/security group 相關設定。Terraform 裡已經有 AWS provider、key pair、security group、EC2 instance 的資源定義。
 
 > [!WARNING]
-> 不建議手動刪除 `terraform.tfstate` 或直接改 Docker 裡的受管理資源。除非是刻意練習修復流程，否則 state 與實際環境不同步時，後續排查會變得很麻煩。
+> 如果真的開 AWS，`allowed_ssh_cidr_blocks` 和 `allowed_monitoring_cidr_blocks` 不建議維持 `0.0.0.0/0`。練習時也要記得最後執行 `terraform destroy`，避免產生不必要費用。
 
-## Terraform 與 Ansible 的銜接
-
-這次實作裡比較關鍵的設計，是 Terraform 會產生 Ansible 需要的檔案：
+產生 inventory 的基本流程：
 
 ```bash
-local_file.ansible_inventory
-local_file.ansible_group_vars
+cd infra/server/terraform
+terraform init
+terraform apply
 ```
 
-`local_file.ansible_inventory` 是給 Ansible 的主機清單。它可以把 Terraform 建立出來的 app container 資訊整理成 Ansible 可讀的 inventory。
+完成後可以檢查 output：
 
-`local_file.ansible_group_vars` 則是把 Terraform output 或環境變數整理成 Ansible group variables。這樣 Ansible playbook 就不用硬編碼 container name、network name 或 target 位址，而是直接讀 Terraform 產生的結果。
+```bash
+terraform output server_ip_addresses
+terraform output ansible_inventory_path
+terraform output system_mode
+terraform output grafana_url
+terraform output prometheus_url
+```
 
-這個流程可以把兩個工具的責任切開：
+部署 agent 和 monitoring stack：
 
-| 工具 | 負責內容 |
-|------|----------|
-| Terraform | 建立 Docker image、network、container，並輸出部署資訊 |
-| Ansible | 讀取 inventory 與 variables，部署或設定 monitoring stack |
+```bash
+make server-agent ANSIBLE_FLAGS="--ask-pass --ask-become-pass"
+make server-stack ANSIBLE_FLAGS="--ask-become-pass"
+```
 
-這樣做的好處是，當 app node 數量或 network 設定調整時，只要重新執行 Terraform，Ansible 使用的設定檔也會跟著更新。
+如果 server 已經設定 SSH key，可以省略 `--ask-pass`。
 
-## 目前進度
+## Python Monitoring Agent
 
-目前已完成的部分：
+這個專案裡有一個自製 Python agent，放在：
 
-- Terraform 可以建立 app image。
-- Terraform 可以建立共用 Docker network。
-- Terraform 可以建立兩個 app container。
-- Terraform 可以產生 Ansible inventory。
-- Terraform 可以產生 Ansible group variables。
-- `terraform state list` 已確認上述資源都被 Terraform 管理。
+```text
+agent/agent.py
+```
 
-接下來可以繼續補上：
+Ansible 會把它部署到遠端 server 的：
 
-- 使用 `terraform output` 檢查輸出的 app target 資訊。
-- 用 Ansible 讀取產生的 inventory。
-- 建立 monitoring stack 的 playbook。
-- 部署 Prometheus 並設定 scrape targets。
-- 部署 Grafana 並匯入 dashboard。
-- 加入 destroy / rebuild 流程，確認整個 lab 可以重複建立與清除。
+```text
+/opt/monitor-agent/agent.py
+/etc/monitor-agent/config.yml
+/var/log/monitor-agent.log
+```
 
-## 小結
+並透過：
 
-這次的重點是把 IaC monitoring lab 的基礎打起來。Terraform 目前已經可以管理 app container、Docker network，以及 Ansible 會用到的設定檔。
+```text
+systemd/monitor-agent.service
+```
 
-下一步會進入 Ansible 與 monitoring stack 的部分，把 Terraform 產出的 inventory 和 variables 接起來，讓 Prometheus / Grafana 的部署也能維持可重複、可版本控管的流程。
+讓它用 systemd 常駐。agent dependencies 會裝在 `/opt/monitor-agent/venv`，避免污染系統 Python。
+
+agent 目前負責的檢查包含：
+
+- CPU sample。
+- Memory sample。
+- Zombie process。
+- DNS resolution check。
+- TCP connectivity check。
+- 錯誤分類，例如 DNS resolution error、TCP timeout、connection refused。
+- 寫入 `/var/log/monitor-agent.log`。
+- 暴露 Prometheus `/metrics` endpoint。
+
+預設 config 在：
+
+```text
+agent/config.yml
+```
+
+README 提到的預設 network checks 包含：
+
+- DNS：`www.graid.com`
+- TCP internal：`192.168.1.254:443`
+- TCP external：`google.com:443`
+
+Server Agent Mode 部署完成後，可以在 server 上確認：
+
+```bash
+sudo systemctl status monitor-agent
+sudo journalctl -u monitor-agent -n 50 --no-pager
+sudo tail -f /var/log/monitor-agent.log
+curl http://localhost:8000/metrics
+```
+
+本機開發時也可以只跑一次 agent：
+
+```bash
+python agent/agent.py --config agent/config.yml --log-file ./monitor-agent.log --once --disable-metrics
+```
+
+## Grafana 與 Prometheus
+
+這個專案不是只把 Prometheus/Grafana container 開起來，而是把 datasource 和 dashboard provisioning 也放進 repo。
+
+Docker Target Mode 的 dashboard 放在：
+
+```text
+ansible/files/docker-target/grafana/dashboards/
+```
+
+目前有：
+
+```text
+docker-target-overview.json
+docker-target-details.json
+```
+
+Server Agent Mode 的 dashboard 放在：
+
+```text
+ansible/files/grafana/dashboards/
+```
+
+目前有：
+
+```text
+iac-agent-overview.json
+```
+
+Grafana datasource provisioning 則放在：
+
+```text
+ansible/files/**/grafana/provisioning/datasources/prometheus.yml
+```
+
+這樣做的好處是 dashboard 不需要登入 Grafana 手動建立。Ansible 重新部署後，Grafana 會自動載入 Prometheus datasource 和 dashboard JSON，整套監控視覺化也可以被版本控管。
+
+## 驗證與品質檢查
+
+repo 裡有一個很重要的入口：
+
+```bash
+make validate
+```
+
+它會執行：
+
+- Docker Target Mode 的 `terraform fmt -check`、`terraform init -backend=false`、`terraform validate`。
+- Server Agent Mode 的 `terraform fmt -check`、`terraform init -backend=false`、`terraform validate`。
+- Ansible playbook syntax check。
+- Grafana dashboard JSON 檢查。
+- Python agent 語法檢查。
+
+這讓專案比較不像一次性的 lab，而是有一個可以在本機或 CI 裡重複執行的品質門檻。
+
+## 目前心得
+
+這個專案目前比較完整的地方，是已經把「資源宣告」和「監控部署」串成一條可重複的流程。特別是 Docker Target Mode，很適合展示 IaC 的幾個重要行為：
+
+- 新增資源：`NODE_COUNT=3`。
+- 刪除資源：`NODE_COUNT=1`。
+- 編輯資源：更新 app response text。
+- 派送設定：Ansible 重新產生 Prometheus/Grafana 使用的設定。
+- 模擬故障：手動 stop container，再用 Terraform 拉回 desired state。
+
+Server Agent Mode 則把同樣概念延伸到遠端 Linux servers：Terraform 管 inventory，Ansible 派 agent，systemd 管生命週期，Prometheus/Grafana 管觀察。
+
+這次我比較有感的是，監控系統本身也應該被 IaC 管起來。否則 dashboard、targets、agent config 如果都靠手動改，最後會很難重建，也很難說明目前環境到底是怎麼來的。
+
+## 後續方向
+
+README 裡也列了一些可以繼續加強的方向：
+
+- 加入 centralized logging，例如 Loki、ELK 或 OpenSearch。
+- 加入 alerting，例如 Alertmanager、Teams webhook 或 Slack webhook。
+- Terraform backend 改成 remote backend，例如 S3 + DynamoDB lock。
+- 將 Ansible 裡 shell-based Docker tasks 改成 `community.docker` modules。
+
+我自己的下一步會想先把 Docker Target Mode 的 demo 流程再整理得更順，讓它可以很清楚地展示：
+
+1. Terraform 建立 targets。
+2. Ansible 派送 monitoring stack。
+3. Grafana 顯示目前狀態。
+4. Terraform scale/edit 後 dashboard 跟著更新。
+5. 故障發生時，Grafana 能指出哪個 target 有問題。
+
+等這條 demo 流程足夠穩，再把 Server Agent Mode 接到更真實的 Linux server 或 AWS EC2，讓整個專案從 lab 往實務監控系統再靠近一點。
