@@ -1,68 +1,160 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PageHero from "../../components/PageHero.astro";
 import BlogCard from "../../components/BlogCard.astro";
+import { isPublicTag } from "../../utils/content";
 
 const posts = (await getCollection("blog")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-const categories = [...new Set(posts.map((post) => post.data.category))];
+const categoryCounts = posts.reduce((counts, post) => {
+  counts.set(post.data.category, (counts.get(post.data.category) ?? 0) + 1);
+  return counts;
+}, new Map<string, number>());
+const tagCounts = posts.reduce((counts, post) => {
+  post.data.tags.filter(isPublicTag).forEach((tag) => {
+    counts.set(tag, (counts.get(tag) ?? 0) + 1);
+  });
+  return counts;
+}, new Map<string, number>());
+const seriesCounts = posts.reduce((counts, post) => {
+  if (post.data.series) {
+    counts.set(post.data.series, (counts.get(post.data.series) ?? 0) + 1);
+  }
+  return counts;
+}, new Map<string, number>());
+const categories = [...categoryCounts.entries()].sort((a, b) => a[0].localeCompare(b[0], "zh-Hant"));
+const tags = [...tagCounts.entries()]
+  .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh-Hant"))
+  .slice(0, 10);
+const series = [...seriesCounts.entries()].sort((a, b) => a[0].localeCompare(b[0], "zh-Hant"));
 ---
 
 <BaseLayout title="文章" description="文章分類與標籤整理。">
-  <PageHero title="文章" description="搜尋或依分類查看文章。" />
+  <section class="page-hero blog-hero">
+    <div class="container">
+      <div class="hero-panel">
+        <h1>文章</h1>
+      </div>
+    </div>
+  </section>
 
   <section class="section">
-    <div class="container">
-      <div class="blog-controls">
-        <label class="search-field">
-          <span class="archive-label">搜尋</span>
-          <input type="search" placeholder="搜尋標題或摘要" data-search-input />
+    <div class="container blog-index-shell">
+      <aside class="blog-sidebar" aria-label="文章瀏覽">
+        <div class="blog-sidebar-panel">
+          <h2>瀏覽文章</h2>
+
+          <div class="blog-sidebar-section">
+            <div class="sidebar-section-title">分類</div>
+            <div class="sidebar-filter-list" data-filter-group="category">
+              <button class="sidebar-filter is-active" type="button" data-filter-category="" aria-pressed="true">
+                <span>全部文章</span>
+                <span>{posts.length}</span>
+              </button>
+              {categories.map(([category, count]) => (
+                <button class="sidebar-filter" type="button" data-filter-category={category.toLowerCase()} aria-pressed="false">
+                  <span>{category}</span>
+                  <span>{count}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {tags.length > 0 && (
+            <div class="blog-sidebar-section">
+              <div class="sidebar-section-title">常用標籤</div>
+              <div class="sidebar-tag-list" data-filter-group="tag">
+                {tags.map(([tag]) => (
+                  <button class="sidebar-tag" type="button" data-filter-tag={tag.toLowerCase()} aria-pressed="false">{tag}</button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {series.length > 0 && (
+            <div class="blog-sidebar-section">
+              <div class="sidebar-section-title">系列筆記</div>
+              <div class="sidebar-series-list" data-filter-group="series">
+                {series.map(([seriesName]) => (
+                  <button class="sidebar-series" type="button" data-filter-series={seriesName.toLowerCase()} aria-pressed="false">
+                    <span aria-hidden="true">▣</span>
+                    <span>{seriesName}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </aside>
+
+      <div class="blog-main">
+        <label class="blog-search">
+          <span class="blog-search-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m16.5 16.5 4 4" /></svg>
+          </span>
+          <span class="sr-only">搜尋文章</span>
+          <input id="blog-search" name="q" type="search" placeholder="搜尋標題、摘要、標籤..." data-search-input />
+          <kbd>CTRL K</kbd>
         </label>
 
-        <label class="select-field">
-          <span class="archive-label">分類</span>
-          <select data-category-filter>
-            <option value="">全部</option>
-            {categories.map((category) => (
-              <option value={category.toLowerCase()}>{category}</option>
-            ))}
-          </select>
-        </label>
-      </div>
+        <div class="blog-list-header">
+          <div class="search-summary" data-search-summary>
+            共 {posts.length} 篇文章
+          </div>
+          <button class="clear-filters" type="button" data-clear-filters hidden>清除篩選</button>
+        </div>
 
-      <div class="search-summary" data-search-summary>
-        共 {posts.length} 篇文章
-      </div>
+        <div class="list-stack blog-post-list" data-post-list>
+          {posts.map((post) => (
+            <BlogCard
+              href={`/blog/${post.id.replace(/\.md$/, "")}/`}
+              title={post.data.title}
+              excerpt={post.data.excerpt}
+              date={post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "short", day: "numeric" })}
+              category={post.data.category}
+              tags={post.data.tags}
+              cover={post.data.cover}
+              series={post.data.series}
+            />
+          ))}
+        </div>
 
-      <div class="list-stack" data-post-list>
-        {posts.map((post) => (
-          <BlogCard
-            href={`/blog/${post.id.replace(/\.md$/, "")}/`}
-            title={post.data.title}
-            excerpt={post.data.excerpt}
-            date={post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "short", day: "numeric" })}
-            category={post.data.category}
-            tags={post.data.tags}
-            cover={post.data.cover}
-          />
-        ))}
+        <p class="search-empty" data-search-empty hidden>找不到符合條件的文章。</p>
       </div>
-
-      <p class="search-empty" data-search-empty hidden>找不到符合條件的文章。</p>
     </div>
   </section>
 </BaseLayout>
 
 <script>
   const searchInput = document.querySelector("[data-search-input]");
-  const categoryFilter = document.querySelector("[data-category-filter]");
+  const categoryButtons = Array.from(document.querySelectorAll("[data-filter-category]"));
+  const tagButtons = Array.from(document.querySelectorAll("[data-filter-tag]"));
+  const seriesButtons = Array.from(document.querySelectorAll("[data-filter-series]"));
+  const clearButton = document.querySelector("[data-clear-filters]");
   const postCards = Array.from(document.querySelectorAll("[data-post-card]"));
   const summary = document.querySelector("[data-search-summary]");
   const empty = document.querySelector("[data-search-empty]");
+  const filters = {
+    category: "",
+    tag: "",
+    series: ""
+  };
+
+  function setPressed(buttons: Element[], activeButton: Element) {
+    buttons.forEach((button) => {
+      if (button instanceof HTMLButtonElement) {
+        const active = button === activeButton;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", String(active));
+      }
+    });
+  }
+
+  function hasActiveFilters(keyword: string) {
+    return Boolean(keyword || filters.category || filters.tag || filters.series);
+  }
 
   function applyFilters() {
     const keyword = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : "";
-    const category = categoryFilter instanceof HTMLSelectElement ? categoryFilter.value : "";
     let visibleCount = 0;
 
     postCards.forEach((card) => {
@@ -71,8 +163,10 @@ const categories = [...new Set(posts.map((post) => post.data.category))];
       }
 
       const matchesKeyword = !keyword || card.dataset.search?.includes(keyword);
-      const matchesCategory = !category || card.dataset.category === category;
-      const visible = Boolean(matchesKeyword && matchesCategory);
+      const matchesCategory = !filters.category || card.dataset.category === filters.category;
+      const matchesTag = !filters.tag || card.dataset.tags?.split(" ").includes(filters.tag);
+      const matchesSeries = !filters.series || card.dataset.series === filters.series;
+      const visible = Boolean(matchesKeyword && matchesCategory && matchesTag && matchesSeries);
 
       card.hidden = !visible;
       if (visible) {
@@ -81,14 +175,94 @@ const categories = [...new Set(posts.map((post) => post.data.category))];
     });
 
     if (summary instanceof HTMLElement) {
-      summary.textContent = keyword || category ? `找到 ${visibleCount} 篇文章` : `共 ${postCards.length} 篇文章`;
+      summary.textContent = hasActiveFilters(keyword) ? `找到 ${visibleCount} 篇文章` : `共 ${postCards.length} 篇文章`;
     }
 
     if (empty instanceof HTMLElement) {
       empty.hidden = visibleCount > 0;
     }
+
+    if (clearButton instanceof HTMLButtonElement) {
+      clearButton.hidden = !hasActiveFilters(keyword);
+    }
   }
 
   searchInput?.addEventListener("input", applyFilters);
-  categoryFilter?.addEventListener("change", applyFilters);
+
+  categoryButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!(button instanceof HTMLButtonElement)) {
+        return;
+      }
+      filters.category = button.dataset.filterCategory ?? "";
+      setPressed(categoryButtons, button);
+      applyFilters();
+    });
+  });
+
+  tagButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!(button instanceof HTMLButtonElement)) {
+        return;
+      }
+      const tag = button.dataset.filterTag ?? "";
+      filters.tag = filters.tag === tag ? "" : tag;
+      tagButtons.forEach((item) => {
+        if (item instanceof HTMLButtonElement) {
+          const active = item.dataset.filterTag === filters.tag;
+          item.classList.toggle("is-active", active);
+          item.setAttribute("aria-pressed", String(active));
+        }
+      });
+      applyFilters();
+    });
+  });
+
+  seriesButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!(button instanceof HTMLButtonElement)) {
+        return;
+      }
+      const series = button.dataset.filterSeries ?? "";
+      filters.series = filters.series === series ? "" : series;
+      seriesButtons.forEach((item) => {
+        if (item instanceof HTMLButtonElement) {
+          const active = item.dataset.filterSeries === filters.series;
+          item.classList.toggle("is-active", active);
+          item.setAttribute("aria-pressed", String(active));
+        }
+      });
+      applyFilters();
+    });
+  });
+
+  clearButton?.addEventListener("click", () => {
+    filters.category = "";
+    filters.tag = "";
+    filters.series = "";
+    if (searchInput instanceof HTMLInputElement) {
+      searchInput.value = "";
+      searchInput.focus();
+    }
+    const allCategoryButton = categoryButtons.find((button) => button instanceof HTMLButtonElement && button.dataset.filterCategory === "");
+    if (allCategoryButton instanceof HTMLButtonElement) {
+      setPressed(categoryButtons, allCategoryButton);
+    }
+    [...tagButtons, ...seriesButtons].forEach((button) => {
+      if (button instanceof HTMLButtonElement) {
+        button.classList.remove("is-active");
+        button.setAttribute("aria-pressed", "false");
+      }
+    });
+    applyFilters();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      if (searchInput instanceof HTMLInputElement) {
+        searchInput.focus();
+      }
+    }
+  });
 </script>

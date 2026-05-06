@@ -10,13 +10,21 @@ type Props = {
   category: string;
   tags?: string[];
   cover?: string;
+  series?: string;
 };
 
-const { href, title, excerpt, date, category, tags = [], cover } = Astro.props;
+const { href, title, excerpt, date, category, tags = [], cover, series } = Astro.props;
 const publicTags = tags.filter(isPublicTag).slice(0, 5);
 ---
 
-<article class="post-preview" data-post-card data-category={category.toLowerCase()} data-search={`${title} ${excerpt} ${category} ${tags.join(" ")}`.toLowerCase()}>
+<article
+  class="post-preview"
+  data-post-card
+  data-category={category.toLowerCase()}
+  data-tags={tags.join(" ").toLowerCase()}
+  data-series={(series ?? "").toLowerCase()}
+  data-search={`${title} ${excerpt} ${category} ${tags.join(" ")} ${series ?? ""}`.toLowerCase()}
+>
   {cover && (
     <a class="post-preview-media" href={withBase(href)} aria-label={title}>
       <img src={withBase(cover)} alt="" loading="lazy" />
@@ -28,11 +36,17 @@ const publicTags = tags.filter(isPublicTag).slice(0, 5);
   </div>
   <h3><a href={withBase(href)}>{title}</a></h3>
   <p>{excerpt}</p>
-  {publicTags.length > 0 && (
-    <div class="tag-list post-preview-tags">
-      {publicTags.map((tag) => (
-        <a class="tag" href={withBase(`/tags/${termSlug(tag)}/`)}>{tag}</a>
-      ))}
-    </div>
-  )}
+  <div class="post-preview-footer">
+    {publicTags.length > 0 && (
+      <div class="tag-list post-preview-tags">
+        {publicTags.map((tag) => (
+          <a class="tag" href={withBase(`/tags/${termSlug(tag)}/`)}>{tag}</a>
+        ))}
+      </div>
+    )}
+    <a class="read-link" href={withBase(href)}>
+      閱讀文章
+      <span aria-hidden="true">→</span>
+    </a>
+  </div>
 </article>
