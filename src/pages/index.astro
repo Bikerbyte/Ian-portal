@@ -2,14 +2,54 @@
 import { getCollection } from "astro:content";
 import { readdirSync } from "node:fs";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import BlogCard from "../components/BlogCard.astro";
 import { site } from "../data/site";
 import { withBase } from "../utils/paths";
 import { isPublicTag, termSlug } from "../utils/content";
 
 const posts = (await getCollection("blog")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const recentPosts = posts.slice(0, 3);
-const publicTags = [...new Set(posts.flatMap((post) => post.data.tags).filter(isPublicTag))].slice(0, 8);
+const allPublicTags = [...new Set(posts.flatMap((post) => post.data.tags).filter(isPublicTag))];
+const seriesCount = new Set(posts.map((post) => post.data.series).filter(Boolean)).size;
+const startLinks = [
+  {
+    href: "/tags/aws/",
+    icon: "cloud",
+    eyebrow: "Cloud",
+    title: "雲端筆記",
+    description: "AWS、EC2、RAG 部署與基礎操作。",
+    tags: ["AWS", "EC2", "RAG"]
+  },
+  {
+    href: "/tags/iac/",
+    icon: "lab",
+    eyebrow: "Lab",
+    title: "IaC Lab",
+    description: "Terraform、Ansible 與可重複建立的實作紀錄。",
+    tags: ["Terraform", "Ansible", "Docker"]
+  },
+  {
+    href: "/tags/observability/",
+    icon: "chart",
+    eyebrow: "Ops",
+    title: "Observability",
+    description: "監控、Grafana 與系統觀測的學習筆記。",
+    tags: ["Grafana", "Monitoring"]
+  },
+  {
+    href: "/blog/",
+    icon: "document",
+    eyebrow: "Index",
+    title: "全部文章",
+    description: "用搜尋、分類和標籤快速找到想看的內容。",
+    tags: ["搜尋", "分類", "標籤"]
+  }
+];
+const startIcons: Record<string, string> = {
+  cloud: `<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M16.5 35.5h18a8 8 0 0 0 .9-15.95A12 12 0 0 0 12.3 17.9 9 9 0 0 0 16.5 35.5Z"/></svg>`,
+  lab: `<svg viewBox="0 0 48 48" aria-hidden="true"><path d="m13 15 11-6 11 6-11 6-11-6Z"/><path d="M13 15v13l11 6 11-6V15"/><path d="M24 21v13"/><path d="M31 31.5a7.5 7.5 0 1 0 15 0 7.5 7.5 0 0 0-15 0Z"/><path d="m36 31.5 3 3 5-6"/></svg>`,
+  chart: `<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 10h30v28H9z"/><path d="M15 31 22 24l5 5 8-12"/><path d="M15 16h4"/><path d="M15 38v-5"/><path d="M39 38h-5"/></svg>`,
+  document: `<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M13 7h15l7 7v27H13z"/><path d="M28 7v8h7"/><path d="M18 23h12"/><path d="M18 30h12"/><path d="M18 36h8"/></svg>`
+};
 type HeroImage = {
   src: string;
   alt: string;
@@ -31,13 +71,18 @@ const heroImages: HeroImage[] = readdirSync(new URL("../../public/images/", impo
     <div class="container home-hero-grid">
       <div class="hero-copy">
         <p class="eyebrow">Ian Notes / Dev Notes</p>
-        <h1>學習紀錄與生活剪輯</h1>
+        <h1>Ian's Blog</h1>
         <p class="hero-description">
-          留下一些自己容易遺忘的內容。
+          Hi~ 歡迎來到我的個人網站，這裡放一些學習筆記、專案和生活紀錄。
         </p>
         <div class="hero-actions">
-          <a class="button" href={withBase("/blog/")}>閱讀文章</a>
+          <a class="button" href={withBase("/blog/")}>開始閱讀</a>
           <a class="button button-secondary" href={withBase("/projects/")}>查看專案</a>
+        </div>
+        <div class="hero-stats" aria-label="網站內容統計">
+          <span>{posts.length} 篇文章</span>
+          <span>{allPublicTags.length} 個標籤</span>
+          <span>{seriesCount} 個系列</span>
         </div>
       </div>
 
@@ -51,23 +96,40 @@ const heroImages: HeroImage[] = readdirSync(new URL("../../public/images/", impo
     </div>
   </section>
 
-  <section class="section section-tinted">
-    <div class="container home-note-grid">
-      <aside class="home-side-panel">
-        <p class="archive-label">Now Writing</p>
-        <h2>最近在整理</h2>
-        <div class="home-topic-list">
-          <a href={withBase("/tags/iac/")}>IaC</a>
-          <a href={withBase("/tags/terraform/")}>Terraform</a>
-          <a href={withBase("/tags/ansible/")}>Ansible</a>
-          <a href={withBase("/tags/grafana/")}>Grafana</a>
+  <section class="section home-start-section">
+    <div class="container">
+      <div class="section-header home-section-header">
+        <div>
+          <p class="archive-label">Start Here</p>
+          <h2>從這裡開始</h2>
         </div>
-        <p>
-          從可以重複建立的 lab 開始，把部署、監控和紀錄慢慢串成自己的工程手冊。
-        </p>
-      </aside>
+      </div>
+      <div class="home-start-grid">
+        {startLinks.map((item) => (
+          <a class="home-start-card" href={withBase(item.href)}>
+            <span class:list={["home-start-icon", `home-start-icon-${item.icon}`]} set:html={startIcons[item.icon]} />
+            <span class="home-start-body">
+              <span class="home-start-eyebrow">{item.eyebrow}</span>
+              <strong>{item.title}</strong>
+              <span>{item.description}</span>
+              <span class="home-start-tags">
+                {item.tags.map((tag) => (
+                  <span>{tag}</span>
+                ))}
+              </span>
+            </span>
+            <span class="home-start-arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7" /></svg>
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
 
-      <div>
+  <section class="section section-tinted">
+    <div class="container home-content-grid">
+      <div class="home-latest-column">
         <div class="section-header home-section-header">
           <div>
             <p class="archive-label">Latest Notes</p>
@@ -75,33 +137,32 @@ const heroImages: HeroImage[] = readdirSync(new URL("../../public/images/", impo
           </div>
           <a class="inline-link" href={withBase("/blog/")}>全部文章</a>
         </div>
-        <div class="list-stack home-post-list">
+        <div class="home-latest-list">
           {recentPosts.map((post) => (
-            <BlogCard
-              href={`/blog/${post.id.replace(/\.md$/, "")}/`}
-              title={post.data.title}
-              excerpt={post.data.excerpt}
-              date={post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "short", day: "numeric" })}
-              category={post.data.category}
-              tags={post.data.tags}
-              cover={post.data.cover}
-            />
+            <article class="home-latest-row">
+              <div class="home-latest-copy">
+                <div class="card-meta">
+                  <a href={withBase(`/categories/${termSlug(post.data.category)}/`)}>{post.data.category}</a>
+                  <span>{post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "short", day: "numeric" })}</span>
+                </div>
+                <h3>
+                  <a href={withBase(`/blog/${post.id.replace(/\.md$/, "")}/`)}>{post.data.title}</a>
+                </h3>
+              </div>
+              <div class="home-latest-actions">
+                <div class="tag-list home-latest-tags">
+                  {post.data.tags.filter(isPublicTag).slice(0, 5).map((tag) => (
+                    <a class="tag" href={withBase(`/tags/${termSlug(tag)}/`)}>{tag}</a>
+                  ))}
+                </div>
+                <a class="read-link" href={withBase(`/blog/${post.id.replace(/\.md$/, "")}/`)}>
+                  閱讀文章
+                  <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </article>
           ))}
         </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container home-tag-band">
-      <div>
-        <p class="archive-label">Index</p>
-        <h2>筆記索引</h2>
-      </div>
-      <div class="tag-list home-tag-list">
-        {publicTags.map((tag) => (
-          <a class="tag" href={withBase(`/tags/${termSlug(tag)}/`)}>{tag}</a>
-        ))}
       </div>
     </div>
   </section>
