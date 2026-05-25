@@ -1,3 +1,17 @@
+/**
+ * Estimate reading time in minutes.
+ * Accounts for Chinese characters (faster per-character pace)
+ * and English words separately.
+ */
+export function readingMinutes(body: string): number {
+  const chineseChars = (body.match(/[一-龥぀-ヿ]/g) ?? []).length;
+  const nonChinese = body.replace(/[一-龥぀-ヿ]/g, " ").trim();
+  const words = nonChinese.split(/\s+/).filter(Boolean).length;
+  // ~300 Chinese chars/min, ~200 English words/min
+  const minutes = chineseChars / 300 + words / 200;
+  return Math.max(1, Math.round(minutes));
+}
+
 export function postSlug(id: string) {
   return id.replace(/\.md$/, "");
 }
