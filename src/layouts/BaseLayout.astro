@@ -17,11 +17,8 @@ const basePath = import.meta.env.BASE_URL.replace(/\/+$/, "");
 const pathname = Astro.url.pathname.replace(basePath, "") || "/";
 const canonicalUrl = absoluteUrl(pathname);
 const socialImage = image ? absoluteUrl(image) : null;
-const navIcons: Record<string, string> = {
-  "/": `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10.5 9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>`,
-  "/blog/": `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="M14 3v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/></svg>`,
-  "/about/": `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg>`
-};
+// Nav icons are defined alongside navItems in src/data/site.ts.
+// To add a page to the navigation, just add an entry there.
 const footerLinks: { href: string; label: string }[] = [
   { href: site.githubUrl, label: "GitHub" },
   site.contactText ? { href: site.contactText, label: "聯絡" } : null
@@ -74,7 +71,7 @@ const footerLinks: { href: string; label: string }[] = [
           <nav aria-label="Main navigation" class="main-nav">
             {navItems.map((item) => (
               <a class:list={[pathname === item.href && "is-active"]} href={withBase(item.href)}>
-                <span class="nav-icon" set:html={navIcons[item.href] ?? navIcons["/"]} />
+                <span class="nav-icon" set:html={item.icon} />
                 <span>{item.label}</span>
               </a>
             ))}

@@ -3,7 +3,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import BlogCard from "../../components/BlogCard.astro";
 import PageHero from "../../components/PageHero.astro";
-import { termSlug } from "../../utils/content";
+import { readingMinutes, termSlug } from "../../utils/content";
 import { withBase } from "../../utils/paths";
 
 const posts = await getCollection("blog");
@@ -50,6 +50,7 @@ const { category, posts: categoryPosts } = Astro.props;
             category={post.data.category}
             tags={post.data.tags}
             cover={post.data.cover}
+            readingTime={readingMinutes(post.body ?? "")}
           />
         ))}
       </div>

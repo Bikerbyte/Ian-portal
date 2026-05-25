@@ -92,6 +92,13 @@ const heroImages: HeroImage[] = readdirSync(new URL("../../public/images/", impo
             <img src={withBase(image.src)} alt={image.alt} loading={index === 0 ? "eager" : "lazy"} />
           </figure>
         ))}
+        {heroImages.length > 1 && (
+          <div class="hero-slideshow-dots" aria-hidden="true">
+            {heroImages.map((_, index) => (
+              <button class:list={["hero-dot", index === 0 && "is-active"]} type="button" data-slide-index={index} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   </section>
@@ -170,13 +177,26 @@ const heroImages: HeroImage[] = readdirSync(new URL("../../public/images/", impo
 
 <script>
   const heroSlides = Array.from(document.querySelectorAll(".hero-slideshow .hero-slide"));
+  const heroDots = Array.from(document.querySelectorAll(".hero-dot"));
   let activeHeroSlide = 0;
 
+  function goToSlide(index: number) {
+    heroSlides[activeHeroSlide]?.classList.remove("is-active");
+    heroDots[activeHeroSlide]?.classList.remove("is-active");
+    activeHeroSlide = index;
+    heroSlides[activeHeroSlide]?.classList.add("is-active");
+    heroDots[activeHeroSlide]?.classList.add("is-active");
+  }
+
   if (heroSlides.length > 1) {
+    // Auto-advance
     window.setInterval(() => {
-      heroSlides[activeHeroSlide]?.classList.remove("is-active");
-      activeHeroSlide = (activeHeroSlide + 1) % heroSlides.length;
-      heroSlides[activeHeroSlide]?.classList.add("is-active");
+      goToSlide((activeHeroSlide + 1) % heroSlides.length);
     }, 5000);
+
+    // Dot click
+    heroDots.forEach((dot, i) => {
+      dot.addEventListener("click", () => goToSlide(i));
+    });
   }
 </script>

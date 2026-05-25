@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import BlogCard from "../../components/BlogCard.astro";
-import { isPublicTag } from "../../utils/content";
+import { isPublicTag, readingMinutes } from "../../utils/content";
 
 const posts = (await getCollection("blog")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const categoryCounts = posts.reduce((counts, post) => {
@@ -114,6 +114,7 @@ const series = [...seriesCounts.entries()].sort((a, b) => a[0].localeCompare(b[0
               tags={post.data.tags}
               cover={post.data.cover}
               series={post.data.series}
+              readingTime={readingMinutes(post.body ?? "")}
             />
           ))}
         </div>

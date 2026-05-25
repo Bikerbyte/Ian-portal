@@ -1,0 +1,29 @@
+/* ─── Site footer ─── */
+.site-footer {
+  border-top: 1px solid var(--line);
+  margin-top: 3rem;
+  padding: 1.5rem 0 2.5rem;
+  background: linear-gradient(90deg, rgba(39, 56, 74, 0.06), rgba(76, 123, 116, 0.06));
+}
+
+.footer-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.footer-signoff {
+  color: var(--text);
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-links a:hover {
+  color: var(--accent);
+}

@@ -2,7 +2,7 @@
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { withBase } from "../../utils/paths";
-import { isPublicTag, postUrl, termSlug } from "../../utils/content";
+import { isPublicTag, postUrl, readingMinutes, termSlug } from "../../utils/content";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -20,6 +20,7 @@ const previousPost = index > 0 ? allPosts[index - 1] : null;
 const nextPost = index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1] : null;
 const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
 const formattedDate = post.data.date.toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric" });
+const estReadingTime = readingMinutes(post.body ?? "");
 const publicTags = post.data.tags.filter(isPublicTag);
 const seriesPosts = post.data.series
   ? allPosts
@@ -55,6 +56,10 @@ const seriesPosts = post.data.series
             <div>
               <dt>日期</dt>
               <dd>{formattedDate}</dd>
+            </div>
+            <div>
+              <dt>閱讀時間</dt>
+              <dd>{estReadingTime} 分鐘</dd>
             </div>
           </dl>
           <div class="tag-list sidebar-tags">

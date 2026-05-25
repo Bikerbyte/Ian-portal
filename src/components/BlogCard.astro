@@ -11,9 +11,10 @@ type Props = {
   tags?: string[];
   cover?: string;
   series?: string;
+  readingTime?: number;
 };
 
-const { href, title, excerpt, date, category, tags = [], cover, series } = Astro.props;
+const { href, title, excerpt, date, category, tags = [], cover, series, readingTime } = Astro.props;
 const publicTags = tags.filter(isPublicTag).slice(0, 5);
 ---
 
@@ -33,6 +34,7 @@ const publicTags = tags.filter(isPublicTag).slice(0, 5);
   <div class="card-meta">
     <a href={withBase(`/categories/${termSlug(category)}/`)}>{category}</a>
     <span>{date}</span>
+    {readingTime && <span class="reading-time-badge">{readingTime} 分鐘閱讀</span>}
   </div>
   <h3><a href={withBase(href)}>{title}</a></h3>
   <p>{excerpt}</p>

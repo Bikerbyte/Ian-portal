@@ -1,19 +1,49 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/PageHero.astro";
+import { site } from "../data/site";
 ---
 
-<BaseLayout title="關於" description="關於這個站。">
-  <PageHero title="關於" description="留一些之後還會回來看的東西。" />
+<BaseLayout title="關於" description="關於 Ian 和這個站。">
+  <PageHero
+    eyebrow="About"
+    title="關於這個站"
+    description="一個學東西、順手整理筆記的地方。"
+  />
 
   <section class="section">
     <div class="container simple-copy">
-      <p>這裡會放筆記、攻略與整理文。</p>
+
+      <h2>Hi，我是 Ian</h2>
+      <p>
+        主要在研究雲端基礎設施、DevOps 工具鏈和系統可觀測性。
+        這個站是我的學習筆記本，把平常遇到的問題、解法和心得整理起來，留給之後的自己，也希望對路過的人有點幫助。
+      </p>
+
+      <h2>這裡有什麼</h2>
       <ul>
-        <li>學習筆記</li>
-        <li>遊戲攻略</li>
-        <li>分類與標籤整理</li>
+        <li><strong>雲端筆記</strong> — AWS 服務架構、EC2、ELB、Auto Scaling 等操作紀錄</li>
+        <li><strong>IaC Lab</strong> — Terraform、Ansible 可重複建立環境的實作</li>
+        <li><strong>Observability</strong> — Grafana、監控設置與系統觀測學習筆記</li>
+        <li><strong>Linux 技巧</strong> — 日常遇到的故障排查和常用指令</li>
       </ul>
+
+      <h2>技術棧</h2>
+      <ul>
+        <li>Cloud: AWS（EC2、ELB、S3、IAM、VPC）</li>
+        <li>IaC: Terraform、Ansible</li>
+        <li>Container: Docker</li>
+        <li>Observability: Grafana、Prometheus</li>
+        <li>OS: Linux（Ubuntu / Amazon Linux）</li>
+      </ul>
+
+      <h2>聯絡</h2>
+      <p>
+        如果有問題或想聊聊，可以到
+        <a href={site.githubUrl} target="_blank" rel="noreferrer">GitHub</a>
+        找我。
+      </p>
+
     </div>
   </section>
 </BaseLayout>
