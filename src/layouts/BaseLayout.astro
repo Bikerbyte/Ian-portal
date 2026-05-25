@@ -54,7 +54,7 @@ const footerLinks: { href: string; label: string }[] = [
     <script is:inline>
       (() => {
         const savedTheme = localStorage.getItem("theme");
-        const theme = savedTheme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        const theme = savedTheme ?? "light";
         document.documentElement.dataset.theme = theme;
       })();
     </script>

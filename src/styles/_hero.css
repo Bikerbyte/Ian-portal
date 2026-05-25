@@ -143,8 +143,7 @@
   pointer-events: none;
   background:
     linear-gradient(90deg, var(--paper) 0, rgba(255, 250, 242, 0.72) 8%, transparent 26%),
-    linear-gradient(180deg, rgba(255, 253, 249, 0.1), transparent 45%, rgba(45, 38, 34, 0.08)),
-    repeating-linear-gradient(0deg, rgba(255, 250, 242, 0.07) 0 1px, transparent 1px 5px);
+    linear-gradient(180deg, rgba(255, 253, 249, 0.1), transparent 45%, rgba(45, 38, 34, 0.08));
   mix-blend-mode: screen;
 }
 
