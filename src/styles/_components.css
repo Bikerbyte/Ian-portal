@@ -275,3 +275,22 @@ button.button:hover {
 .search-empty {
   margin-top: 1rem;
 }
+
+:root[data-theme="dark"] .button,
+:root[data-theme="dark"] button.button,
+:root[data-theme="dark"] .tag-button {
+  border-color: rgba(242, 238, 232, 0.16);
+  background: rgba(12, 17, 19, 0.82);
+}
+
+:root[data-theme="dark"] .tag {
+  border-color: rgba(242, 238, 232, 0.12);
+  background: rgba(10, 14, 16, 0.78);
+  color: #d6cec5;
+}
+
+:root[data-theme="dark"] .tag:hover {
+  border-color: rgba(226, 138, 100, 0.42);
+  background: rgba(226, 138, 100, 0.16);
+  color: #ffd0bd;
+}
