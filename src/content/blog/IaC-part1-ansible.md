@@ -554,7 +554,7 @@ Push，控制節點透過 SSH（Linux）或 WinRM（Windows）連線目標執行
 Handler 是事件驅動，只在被 `notify` 而且 task 真的 `changed` 時觸發；多次 notify 同個 handler 只會跑一次；預設整個 play 結束才執行。最常拿來「設定變更後重啟服務」。
 
 **5. Variable 優先序？**  
-記憶口訣：**extra-vars > task vars > block vars > role vars > set_fact/register > play vars > host_vars > group_vars > role defaults**。CLI `-e` 永遠最高。
+記憶口訣（高 → 低）：**extra-vars > set_fact/register > task vars > block vars > role vars (vars/) > play vars > host facts > host_vars > group_vars > role defaults**。CLI `-e` 永遠最高。常見坑：`set_fact` 設過的值會覆蓋 task/block/role vars，debug 變數衝突時要先想到這條。
 
 **6. 如何只跑 Playbook 的某一部分？**  
 - `--tags` / `--skip-tags`

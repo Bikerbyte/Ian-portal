@@ -124,7 +124,7 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: fast-ssd
-provisioner: kubernetes.io/aws-ebs
+provisioner: ebs.csi.aws.com   # EBS CSI driver（in-tree kubernetes.io/aws-ebs 在 1.23+ 已 deprecated）
 parameters:
   type: gp3
   fsType: ext4
