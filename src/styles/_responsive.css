@@ -33,6 +33,12 @@
   .post-sidebar {
     position: static;
     order: -1;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .post-sidebar-tabs {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .toc-card {
@@ -188,5 +194,9 @@
     position: static;
     float: right;
     margin: -2.15rem 0 0.6rem;
+  }
+
+  .post-sidebar-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
