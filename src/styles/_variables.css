@@ -25,7 +25,7 @@
     linear-gradient(90deg, rgba(255, 250, 242, 0.95), rgba(237, 244, 242, 0.7));
   --body-bg: var(--bg);
   --container: 1320px;
-  --content: 820px;
+  --content: 960px;
 }
 
 :root[data-theme="dark"] {
