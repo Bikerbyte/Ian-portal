@@ -320,7 +320,30 @@
   display: flex;
   align-items: end;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1.2rem;
+}
+
+/* Decorative line that extends from after the title to the right edge */
+.home-section-header > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.home-section-header > div:first-child h2 {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.home-section-header > div:first-child h2::after {
+  content: "";
+  display: inline-block;
+  width: clamp(40px, 8vw, 100px);
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  opacity: 0.65;
 }
 
 :root[data-theme="dark"] .home-start-section {
