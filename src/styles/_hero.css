@@ -31,9 +31,20 @@
   position: relative;
   overflow: hidden;
   padding-top: clamp(3.2rem, 5.6vw, 5rem);
-  padding-bottom: clamp(1.7rem, 3.8vw, 3rem);
-  border-bottom: 1px solid var(--line);
+  padding-bottom: clamp(3rem, 5vw, 4.5rem);   /* 多留空間給 wave */
+  border-bottom: none;                          /* 由 wave 取代 */
   background: var(--hero-bg);
+}
+
+.hero-wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;             /* 蓋掉浮點誤差的細線 */
+  width: 100%;
+  height: clamp(40px, 5vw, 70px);
+  display: block;
+  pointer-events: none;
 }
 
 .home-hero::before {
