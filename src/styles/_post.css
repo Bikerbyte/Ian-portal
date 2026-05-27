@@ -280,6 +280,23 @@
   top: 1.5rem;
   display: grid;
   gap: 1.4rem;
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(67, 80, 82, 0.3) transparent;
+}
+
+.post-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.post-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(67, 80, 82, 0.3);
+  border-radius: 3px;
+}
+
+.post-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(67, 80, 82, 0.5);
 }
 
 .sidebar-card {
@@ -359,8 +376,7 @@
 }
 
 .toc-card {
-  max-height: calc(100vh - 3rem);
-  overflow: auto;
+  /* 外層 .post-sidebar 已處理滾動，這裡不再設 max-height */
 }
 
 .toc-links {

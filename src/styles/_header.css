@@ -3,10 +3,24 @@
   position: sticky;
   top: 0;
   z-index: 15;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  backdrop-filter: none;
+  box-shadow: none;
+  transition: background 220ms ease, border-color 220ms ease, box-shadow 220ms ease, backdrop-filter 220ms ease;
+}
+
+/* 捲動超過 hero 後加實底 + 模糊 */
+.site-header.is-scrolled {
+  border-bottom-color: var(--line);
   background: var(--header-bg);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 10px 28px rgba(45, 38, 34, 0.04);
+}
+
+:root[data-theme="dark"] .site-header.is-scrolled {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
 }
 
 .header-inner {

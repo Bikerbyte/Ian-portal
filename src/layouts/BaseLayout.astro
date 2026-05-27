@@ -126,6 +126,27 @@ const footerLinks: { href: string; label: string }[] = [
   window.addEventListener("scroll", updateReadingProgress, { passive: true });
   window.addEventListener("resize", updateReadingProgress);
 
+  // Header transparent on hero / solid after scroll
+  const siteHeader = document.querySelector(".site-header");
+  const homeHero = document.querySelector(".home-hero");
+
+  function updateHeaderState() {
+    if (!(siteHeader instanceof HTMLElement)) return;
+    // On non-home pages there is no .home-hero — header always solid
+    if (!(homeHero instanceof HTMLElement)) {
+      siteHeader.classList.add("is-scrolled");
+      return;
+    }
+    // On home page: solid when scrolled past the hero (minus the header height)
+    const headerHeight = siteHeader.offsetHeight;
+    const threshold = homeHero.offsetTop + homeHero.offsetHeight - headerHeight - 16;
+    siteHeader.classList.toggle("is-scrolled", window.scrollY > threshold);
+  }
+
+  updateHeaderState();
+  window.addEventListener("scroll", updateHeaderState, { passive: true });
+  window.addEventListener("resize", updateHeaderState);
+
   const themeToggle = document.querySelector("[data-theme-toggle]");
 
   function applyTheme(theme: string | undefined) {

@@ -1,5 +1,113 @@
 /* ─── Home page sections ─── */
 
+/* Profile card (sits between hero wave and start-here grid) */
+.home-profile-section {
+  position: relative;
+  z-index: 2;
+  margin-top: -2.5rem;        /* 往上「跨進」hero wave */
+  padding: 0 0 1.5rem;
+}
+
+.home-profile-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 1.2rem 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-strong);
+  box-shadow: 0 12px 32px var(--shadow);
+}
+
+.home-profile-avatar {
+  width: 64px;
+  height: 64px;
+}
+
+.home-profile-avatar svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.home-profile-name {
+  margin: 0 0 0.2rem;
+  font-family: "Lora", serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text);
+}
+
+.home-profile-bio {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  max-width: 38rem;
+}
+
+.home-profile-stats {
+  display: flex;
+  gap: 0;
+  border-left: 1px solid var(--line);
+  padding-left: 1.5rem;
+}
+
+.home-profile-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 1.1rem;
+  text-decoration: none;
+  border-right: 1px solid var(--line);
+  transition: color 150ms ease;
+}
+
+.home-profile-stat:last-child {
+  border-right: none;
+}
+
+.home-profile-stat:hover {
+  color: var(--accent);
+}
+
+.home-profile-stat-num {
+  font-family: "Lora", serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--text);
+}
+
+.home-profile-stat:hover .home-profile-stat-num {
+  color: var(--accent);
+}
+
+.home-profile-stat-label {
+  margin-top: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+@media (max-width: 720px) {
+  .home-profile-card {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+  }
+  .home-profile-stats {
+    grid-column: 1 / -1;
+    border-left: none;
+    border-top: 1px solid var(--line);
+    padding-left: 0;
+    padding-top: 1rem;
+    justify-content: space-around;
+  }
+}
+
 /* "Start here" grid */
 .home-start-section {
   padding-top: 1.35rem;
@@ -212,7 +320,30 @@
   display: flex;
   align-items: end;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1.2rem;
+}
+
+/* Decorative line that extends from after the title to the right edge */
+.home-section-header > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.home-section-header > div:first-child h2 {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.home-section-header > div:first-child h2::after {
+  content: "";
+  display: inline-block;
+  width: clamp(40px, 8vw, 100px);
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  opacity: 0.65;
 }
 
 :root[data-theme="dark"] .home-start-section {
