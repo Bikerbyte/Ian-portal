@@ -114,6 +114,37 @@ const heroImages: HeroImage[] = readdirSync(new URL("../../public/images/", impo
     </svg>
   </section>
 
+  <section class="home-profile-section" aria-label="關於作者">
+    <div class="container">
+      <div class="home-profile-card">
+        <div class="home-profile-avatar" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="30" fill="var(--accent-soft)" />
+            <text x="50%" y="56%" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="var(--accent)" font-weight="700">I</text>
+          </svg>
+        </div>
+        <div class="home-profile-body">
+          <p class="home-profile-name">Ian Hsu</p>
+          <p class="home-profile-bio">Infrastructure / SRE 工程師，記錄 AWS、Kubernetes、Terraform、Ansible 的學習與實作筆記。</p>
+        </div>
+        <div class="home-profile-stats">
+          <a href={withBase("/blog/")} class="home-profile-stat">
+            <span class="home-profile-stat-num">{posts.length}</span>
+            <span class="home-profile-stat-label">文章</span>
+          </a>
+          <a href={withBase("/blog/")} class="home-profile-stat">
+            <span class="home-profile-stat-num">{seriesCount}</span>
+            <span class="home-profile-stat-label">系列</span>
+          </a>
+          <a href={withBase("/blog/")} class="home-profile-stat">
+            <span class="home-profile-stat-num">{allPublicTags.length}</span>
+            <span class="home-profile-stat-label">標籤</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="section home-start-section">
     <div class="container">
       <div class="section-header home-section-header">
